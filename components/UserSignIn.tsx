@@ -39,7 +39,7 @@ const UserSignIn = (props: Props) => {
     if(!session.success){
     return toast(`${session.error}`)
     }
-    router.push('/home')
+    router.push('/Dashboard')
     
   }
   return (

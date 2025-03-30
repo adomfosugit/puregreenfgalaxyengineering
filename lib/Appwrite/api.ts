@@ -1,11 +1,10 @@
 'use server'
 
 import { createSessionClient,createAdminClient } from "./Config";
-import {ID, OAuthProvider, Query} from 'node-appwrite'
+import {ID, Query} from 'node-appwrite'
 import {InputFile} from 'node-appwrite/file'
 import { cookies, headers } from "next/headers";
 import { parseStringify } from "@/lib/utils";
-import { NewUser, SNewUser } from "@/Types";
 import { redirect } from "next/navigation";
 interface LandFormValues {
   location: { lat: number; lng: number } | null; 
