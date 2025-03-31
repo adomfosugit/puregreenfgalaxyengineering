@@ -143,13 +143,7 @@ async function getData(): Promise<PurchaseOrder[]> {
       Price: 319,
       Date: '2024-11-30'
     },
-    {
-      id: 'sale-19',
-      ProductId: 'INV-2001',
-      Quantity: '3',
-      Price: 1299,
-      Date: '2024-12-05'
-    },
+
     {
       id: 'sale-20',
       ProductId: 'BAT-3001',
