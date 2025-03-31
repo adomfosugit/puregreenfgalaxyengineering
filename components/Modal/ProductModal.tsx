@@ -189,25 +189,15 @@ const ProductModal = () => {
         />
          <Input
           id="name"
-          label="name"
+          label="Product Name"
           disabled={isLoading}
           register={register}
           errors={errors}
           required
         />
-        <ProductDimension
-          title="Width"
-          subtitle="Enter the width of your product"
-          onChange={(value) => setCustomValue('width', value)}
-        />
-        <ProductDimension
-          title="Length"
-          subtitle="Enter the length of your product"
-          onChange={(value) => setCustomValue('length', value)}
-        />
-       <Input
+         <Input
           id="Brand"
-          label="brand"
+          label="Product Brand"
           disabled={isLoading}
           register={register}
           errors={errors}
@@ -215,12 +205,27 @@ const ProductModal = () => {
         />
        <Input
           id="Description"
-          label="description"
+          label="Product Description"
           disabled={isLoading}
           register={register}
           errors={errors}
           required
         />
+        <div className='flex mx-auto justify-start space-x-3'> 
+        <ProductDimension
+          title="Width"
+          subtitle="Enter the width of your product"
+          onChange={(value) => setCustomValue('width', value)}
+          unit='m'
+        />
+        <ProductDimension
+          title="Length"
+          subtitle="Enter the length of your product"
+          onChange={(value) => setCustomValue('length', value)}
+          unit='m'
+        />
+        </div>
+      
         
       </div>
        
@@ -236,23 +241,18 @@ const ProductModal = () => {
           subtitle="quantity and price"
         />
         <ProductDimension
-          title="Width"
+          title="price"
           subtitle="Enter the price of your product"
           onChange={(value) => setCustomValue('price', value)}
+          unit='GHS'
         />
         <ProductDimension
-          title="Length"
+          title="quantity"
           subtitle="Enter the length of your product"
           onChange={(value) => setCustomValue('quntity', value)}
+          unit= 'Items'
         />
-       <Input
-          id="Description"
-          label="description"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
+ 
         
       </div>
        

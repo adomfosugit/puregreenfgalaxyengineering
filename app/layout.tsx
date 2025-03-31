@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
     
       >
-        <ProductModal />
+       
         {children}
         <Toaster />
       </body>

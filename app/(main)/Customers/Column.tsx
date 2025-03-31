@@ -3,24 +3,21 @@
 import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
+import { Customer } from "./page"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Payment = {
-  id: string
-  Price: number
-  Brand:string;
-  Name:string;
-  Quantity:number;
-  Type: string;
-  Efficiency: string;
-  Warranty: string;
-}
 
-export const columns: ColumnDef<Payment>[] = [
+
+export const columns: ColumnDef<Customer>[] = [
   {
-    accessorKey: "Name",
-    header: ({ column }) => {
+    accessorKey: "email",
+    header: "Email"
+  },
+
+  {
+    accessorKey: "name",
+     header: ({ column }) => {
         return (
           <Button
             variant="ghost"
@@ -31,33 +28,16 @@ export const columns: ColumnDef<Payment>[] = [
           </Button>
         )}
   },
-  {
-    accessorKey: "Brand",
-    header: "Brand",
-  },
-  {
-    accessorKey: "Price",
-     header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Price
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )}
-  },
 
   {
-    accessorKey: "Quantity",
+    accessorKey: "contact",
     header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Quantity
+            Contact
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )}

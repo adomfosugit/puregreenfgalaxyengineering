@@ -34,7 +34,7 @@ const Input = ({
         <BiDollar
           size={24}
           className="
-            text-neutral-700
+            text-neutral-800
             absolute
             top-5
             left-2
@@ -59,11 +59,11 @@ const Input = ({
           disabled:opacity-70
           disabled:cursor-not-allowed
           ${formatPrice ? 'pl-9' : 'pl-4'}
-          ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+          ${errors[id] ? 'border-rose-500' : 'border-neutral-800'}
           ${
             errors[id]
               ? 'focus:border-rose-500'
-              : 'focus:border-traverse-yellow'
+              : 'focus:border-zinc-600'
           }
           ${styles ? styles : ''}
         `}
@@ -83,7 +83,7 @@ const Input = ({
           peer-placeholder-shown:translate-y-0 
           peer-focus:scale-75
           peer-focus:-translate-y-4
-          ${errors[id] ? 'text-rose-500' : 'text-zinc-400'}
+          ${errors[id] ? 'text-rose-500' : 'text-zinc-800'}
         `}
       >
         {label}
