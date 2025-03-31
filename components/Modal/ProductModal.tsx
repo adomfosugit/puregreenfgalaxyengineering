@@ -75,7 +75,7 @@ const ProductModal = () => {
     defaultValues: {
       category:'',
       price: 1,
-      description: '',
+      description:'',
       quantity:1,
       brand:'',
       width:1,
@@ -88,9 +88,7 @@ const ProductModal = () => {
 
 
   const category = watch('category');
-  const width = watch('width');
-  const length = watch('length');
-  const description = watch('description');
+
  
 
   const setCustomValue = (id: string, value: any) => {
@@ -125,6 +123,7 @@ const ProductModal = () => {
       if (upload.success) {
         toast(`Product Successfully uploaded`);
         reset(); // Reset the form
+        router.refresh();
     
        
       } else {
@@ -196,7 +195,7 @@ const ProductModal = () => {
           required
         />
          <Input
-          id="Brand"
+          id="brand"
           label="Product Brand"
           disabled={isLoading}
           register={register}
@@ -204,7 +203,7 @@ const ProductModal = () => {
           required
         />
        <Input
-          id="Description"
+          id="description"
           label="Product Description"
           disabled={isLoading}
           register={register}
@@ -245,11 +244,12 @@ const ProductModal = () => {
           subtitle="Enter the price of your product"
           onChange={(value) => setCustomValue('price', value)}
           unit='GHS'
+          
         />
         <ProductDimension
           title="quantity"
           subtitle="Enter the length of your product"
-          onChange={(value) => setCustomValue('quntity', value)}
+          onChange={(value) => setCustomValue('quantity', value)}
           unit= 'Items'
         />
  
@@ -270,6 +270,7 @@ const ProductModal = () => {
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
       body={bodyContent}
+      disabled={isLoading}
     />
   );
 };

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import ModalHeader from './ModalHeader';
 import Input from './Input';
 import useCustomerModal from '@/hooks/useCustomerModal';
+import { uploadCustomer } from '@/lib/Appwrite/api';
 
 const CustomerModal = () => {
   const router = useRouter();
@@ -29,8 +30,12 @@ const CustomerModal = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     try {
-      // Here you would typically call your API to create the customer
-      console.log('Customer data:', data);
+      //@ts-ignore
+      const upload = await uploadCustomer(data);
+      if (!upload.success) {
+        throw new Error('Failed to create customer');
+      }
+ 
       
       toast.success('Customer created successfully');
       reset();

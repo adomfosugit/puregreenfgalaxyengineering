@@ -11,12 +11,12 @@ import { Customer } from "./page"
 
 export const columns: ColumnDef<Customer>[] = [
   {
-    accessorKey: "email",
+    accessorKey: "Email",
     header: "Email"
   },
 
   {
-    accessorKey: "name",
+    accessorKey: "Name",
      header: ({ column }) => {
         return (
           <Button
@@ -30,7 +30,7 @@ export const columns: ColumnDef<Customer>[] = [
   },
 
   {
-    accessorKey: "contact",
+    accessorKey: "Phone",
     header: ({ column }) => {
         return (
           <Button

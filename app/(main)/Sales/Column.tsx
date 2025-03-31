@@ -7,16 +7,17 @@ import { SalesOrder } from "./page"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-
+import { format } from 'date-fns';
 
 export const columns: ColumnDef<SalesOrder>[] = [
   {
-    accessorKey: "orderId",
-    header: "orderId"
+    accessorKey: "$id",
+    header: "Order Id"
   },
-  {
-    accessorKey: "orderDate",
-    header: ({ column }) => {
+  { 
+    
+    accessorKey: ("$createdAt") ,
+     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
@@ -25,11 +26,13 @@ export const columns: ColumnDef<SalesOrder>[] = [
           Order Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )}
+      )
+    },
+    
   },
   {
-    accessorKey: "customer.name",
-    id:"customername",
+    accessorKey: "customer.Name",
+    id:"customer name",
      header: ({ column }) => {
         return (
           <Button
@@ -43,14 +46,14 @@ export const columns: ColumnDef<SalesOrder>[] = [
   },
 
   {
-    accessorKey: "pricingSummary.subtotal",
+    accessorKey: "Price",
     header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Pricing
+            Sales Order Cost
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )}

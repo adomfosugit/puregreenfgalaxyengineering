@@ -1,6 +1,7 @@
 'use client';
 
 import { ChangeEvent, useCallback } from 'react';
+import { number } from 'zod';
 
 interface IProductAreaProps {
   title: string;
@@ -24,6 +25,7 @@ const ProductDimension = ({ title, subtitle,unit, onChange }: IProductAreaProps)
           title={title}
           onChange={(e) => onAdd(e)}
           className="font-light text-neutral-600 border rounded-md border-black outline-black w-20 p-2"
+          type='number'
         />
         <div className="w-12 h-12 rounded-full border-[2px] border-black flex items-center justify-center text-black cursor-pointer hover:opacity-80 transition">
           {unit}

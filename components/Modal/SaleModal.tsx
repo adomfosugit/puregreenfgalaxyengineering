@@ -2,34 +2,25 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Modal from './Modal';
 import { toast } from 'sonner';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import Modal from './Modal';
 import useSalesModal from '@/hooks/useSalesModal';
 import ModalHeader from './ModalHeader';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Input from './Input';
+import { Customer } from '@/app/(main)/Customers/page';
+import { Product } from '@/app/(main)/Product/Column';
 
-// Dummy data
-const dummyCustomers = [
-  { id: 'cust-1', name: 'Solar Solutions Inc.', email: 'contact@solarsolutions.com' },
-  { id: 'cust-2', name: 'Green Energy Co-op', email: 'orders@greencoop.org' },
-  { id: 'cust-3', name: 'EcoHome Installations', email: 'sales@ecohome.com' },
-  { id: 'cust-4', name: 'Sunshine Farms', email: 'manager@sunshinefarms.com' },
-];
+interface SalesModalProps {
+  customers: Customer[];
+  products: Product[];
+}
 
-const dummyProducts = [
-  { id: 'SP-1001', name: 'LG Neon R 375W', brand: 'LG', price: 249 },
-  { id: 'SP-1002', name: 'Canadian Solar HiKu 400W', brand: 'Canadian Solar', price: 189 },
-  { id: 'SP-1003', name: 'SunPower Maxeon 3 400W', brand: 'SunPower', price: 319 },
-  { id: 'INV-2001', name: 'SolarEdge SE5000H', brand: 'SolarEdge', price: 1299 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-];
-
-const SalesModal = () => {
+const SalesModal = ({ customers, products }: SalesModalProps) => {
   const router = useRouter();
   const salesModal = useSalesModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -53,30 +44,53 @@ const SalesModal = () => {
 
   const customerId = watch('customerId');
   const productId = watch('productId');
+  const quantity = watch('quantity');
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
+    
     try {
-      const customer = dummyCustomers.find(c => c.id === data.customerId);
-      const product = dummyProducts.find(p => p.id === data.productId);
+      const selectedCustomer = customers.find(c => c.email === data.customerId);
+      const selectedProduct = products.find(p => p.$id === data.productId);
 
-      console.log('New Sale Recorded:', {
-        customer,
-        product,
+      if (!selectedCustomer || !selectedProduct) {
+        throw new Error('Invalid customer or product selection');
+      }
+
+      const totalPrice = selectedProduct.Price * data.quantity;
+      const saleData = {
+        customer: selectedCustomer,
+        product: selectedProduct,
         quantity: data.quantity,
-        totalPrice: product ? product.price * data.quantity : 0,
+        totalPrice,
         date: new Date().toISOString()
-      });
+      };
 
-      toast.success(`Sale recorded for ${customer?.name}`);
+      // Here you would typically make an API call to record the sale
+      console.log('New Sale Recorded:', saleData);
+      
+      toast.success(`Sale recorded for ${selectedCustomer.name}`);
       reset();
       salesModal.onClose();
+      router.refresh();
     } catch (error) {
-      toast.error('Failed to record sale');
+      toast.error(error instanceof Error ? error.message : 'Failed to record sale');
     } finally {
       setIsLoading(false);
     }
   };
+
+  const filteredCustomers = customers.filter(customer =>
+    customer.name.includes(customerSearch) ||
+    customer.email.includes(customerSearch)
+  );
+
+  const filteredProducts = products.filter(product =>
+    product.Name.includes(productSearch) ||
+    product.Brand.includes(productSearch)
+  );
+
+  const selectedProduct = products.find(p => p.$id === productId);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -100,7 +114,7 @@ const SalesModal = () => {
                 )}
               >
                 {customerId
-                  ? dummyCustomers.find((customer) => customer.id === customerId)?.name
+                  ? customers.find(c => c.email === customerId)?.name
                   : "Select customer"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -114,24 +128,20 @@ const SalesModal = () => {
                 />
                 <CommandList>
                   <CommandGroup>
-                    {dummyCustomers
-                      .filter((customer) =>
-                        customer.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
-                        customer.email.toLowerCase().includes(customerSearch.toLowerCase())
-                      )
-                      .map((customer) => (
+                    {filteredCustomers.length > 0 ? (
+                      filteredCustomers.map(customer => (
                         <CommandItem
-                          value={customer.id}
-                          key={customer.id}
+                          value={customer.email}
+                          key={customer.email}
                           onSelect={() => {
-                            setValue('customerId', customer.id);
+                            setValue('customerId', customer.email, { shouldValidate: true });
                             setCustomerSearch('');
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              customer.id === customerId ? "opacity-100" : "opacity-0"
+                              customer.email === customerId ? "opacity-100" : "opacity-0"
                             )}
                           />
                           <div className="flex flex-col">
@@ -141,7 +151,12 @@ const SalesModal = () => {
                             </span>
                           </div>
                         </CommandItem>
-                      ))}
+                      ))
+                    ) : (
+                      <CommandItem className="text-muted-foreground">
+                        No customers found
+                      </CommandItem>
+                    )}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -166,8 +181,7 @@ const SalesModal = () => {
                 )}
               >
                 {productId
-                  ? `${dummyProducts.find((product) => product.id === productId)?.brand} 
-                     ${dummyProducts.find((product) => product.id === productId)?.name}`
+                  ? `${selectedProduct?.Brand} ${selectedProduct?.Name}`
                   : "Select product"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -181,34 +195,35 @@ const SalesModal = () => {
                 />
                 <CommandList>
                   <CommandGroup>
-                    {dummyProducts
-                      .filter((product) =>
-                        product.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-                        product.brand.toLowerCase().includes(productSearch.toLowerCase())
-                      )
-                      .map((product) => (
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map(product => (
                         <CommandItem
-                          value={product.id}
-                          key={product.id}
+                          value={product.$id}
+                          key={product.$id}
                           onSelect={() => {
-                            setValue('productId', product.id);
+                            setValue('productId', product.$id, { shouldValidate: true });
                             setProductSearch('');
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              product.id === productId ? "opacity-100" : "opacity-0"
+                              product.$id === productId ? "opacity-100" : "opacity-0"
                             )}
                           />
                           <div className="flex flex-col">
-                            <span>{product.brand} {product.name}</span>
+                            <span>{product.Brand} {product.Name}</span>
                             <span className="text-xs text-muted-foreground">
-                              GHS {product.price}
+                              GHS {product.Price.toFixed(2)}
                             </span>
                           </div>
                         </CommandItem>
-                      ))}
+                      ))
+                    ) : (
+                      <CommandItem className="text-muted-foreground">
+                        No products found
+                      </CommandItem>
+                    )}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -229,6 +244,16 @@ const SalesModal = () => {
           errors={errors}
           required
         />
+
+        {/* Total Price Display */}
+        {selectedProduct && quantity && (
+          <div className="flex justify-between items-center p-2 bg-muted rounded-md">
+            <span className="text-sm font-medium">Total Price:</span>
+            <span className="font-bold">
+              GHS {(selectedProduct.Price * quantity).toFixed(2)}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -240,7 +265,7 @@ const SalesModal = () => {
       onSubmit={handleSubmit(onSubmit)}
       actionLabel="Record Sale"
       body={bodyContent}
-      disabled={isLoading}
+      disabled={isLoading || !customerId || !productId}
     />
   );
 };

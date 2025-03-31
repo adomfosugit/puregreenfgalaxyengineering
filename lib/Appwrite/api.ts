@@ -6,6 +6,8 @@ import {InputFile} from 'node-appwrite/file'
 import { cookies, headers } from "next/headers";
 import { parseStringify } from "@/lib/utils";
 import { redirect } from "next/navigation";
+import { Product } from "@/app/(main)/Product/Column";
+import { Customer } from "@/app/(main)/Customers/page";
 interface ProductFormValues {
   
   quantity: number; 
@@ -26,7 +28,7 @@ export type NewUser = {
 
 }
 // Authentication 
-const {NEXT_DATABASE_ID,  NEXT_SERVICEPROVIDER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_LAND_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
+const {NEXT_DATABASE_ID, NEXT_SALES_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
 
 export async function createSUserAccount(user:NewUser){ 
 
@@ -96,14 +98,38 @@ export async function LogOutUser(){
 }
 
 
-export async function getLands(){
+export async function getProducts(){
   try {
     const { database } = await createAdminClient()
-    const landData = await database.listDocuments(
+    const ProductData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_LAND_COLLECTION_ID!,)
+      NEXT_PRODUCT_COLLECTION_ID!,)
       
-    return landData.documents
+    return ProductData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getCustomers(){
+  try {
+    const { database } = await createAdminClient()
+    const CustomerData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_CUSTOMER_COLLECTION_ID!,)
+      
+    return CustomerData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getSales(){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_SALES_COLLECTION_ID!,)
+      
+    return SalesData.documents
   } catch (error) {
     console.log(error)
   }
@@ -121,7 +147,32 @@ export async function getLandById(id:string){
     console.log(error)
   }
 } 
+export async function uploadCustomer(data: Customer) {
+  const {name,email, phone} = data;
 
+  try {
+    // Upload land
+    const { database } = await createAdminClient();
+    const customerupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_CUSTOMER_COLLECTION_ID!,
+      ID.unique(),
+      {
+        Name:name,
+        Phone: phone,
+        Email: email
+      
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(customerupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
 
 export async function uploadProduct(data: ProductFormValues) {
   const { category, price, description, quantity, brand, userEmail, name,width, length } = data;
@@ -131,7 +182,7 @@ export async function uploadProduct(data: ProductFormValues) {
     const { database } = await createAdminClient();
     const landupload = await database.createDocument(
       NEXT_DATABASE_ID!,
-      NEXT_LAND_COLLECTION_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
       ID.unique(),
       {
         Name:name,
@@ -155,6 +206,12 @@ export async function uploadProduct(data: ProductFormValues) {
     return { success: false, error: error?.message || "An error occurred while uploading the land." };
   }
 }
+
+
+
+
+
+
 export async function filePreviewer(fileId:number){
   try {
     const { Storage } = await createAdminClient();

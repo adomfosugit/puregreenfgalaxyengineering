@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Navbar from "@/components/Navbar";
-import { getLoggedInUser } from "@/lib/Appwrite/api";
+import { getCustomers, getLoggedInUser, getProducts } from "@/lib/Appwrite/api";
 import { redirect } from "next/navigation";
 import SalesModal from "@/components/Modal/SaleModal";
 import ProductModal from "@/components/Modal/ProductModal";
@@ -30,6 +30,8 @@ export default async function RootLayout({children}: Readonly<{children: React.R
 {
  
   const getUser = await getLoggedInUser()
+  const customers = await getCustomers()
+  const products = await getProducts()
   if(!getUser){
       redirect('/')
   }
@@ -41,7 +43,8 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         <Navbar />
         <Toaster/>
         <ProductModal />
-        <SalesModal />
+        {/* @ts-ignore */}
+        <SalesModal  customers={customers} products ={products}/>
         <CustomerModal />
         <PurchaseModal />
         {children}
