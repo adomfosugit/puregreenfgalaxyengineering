@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import SalesModal from "@/components/Modal/SaleModal";
 import ProductModal from "@/components/Modal/ProductModal";
 import CustomerModal from "@/components/Modal/CustomerModal";
+import PurchaseModal from "@/components/Modal/PurchaseModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         <ProductModal />
         <SalesModal />
         <CustomerModal />
+        <PurchaseModal />
         {children}
 
       </body>
