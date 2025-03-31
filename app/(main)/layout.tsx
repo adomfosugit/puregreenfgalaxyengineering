@@ -9,6 +9,8 @@ import SalesModal from "@/components/Modal/SaleModal";
 import ProductModal from "@/components/Modal/ProductModal";
 import CustomerModal from "@/components/Modal/CustomerModal";
 import PurchaseModal from "@/components/Modal/PurchaseModal";
+import { Customer } from "./Customers/page";
+import { Product } from "./Product/Column";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +32,11 @@ export default async function RootLayout({children}: Readonly<{children: React.R
 {
  
   const getUser = await getLoggedInUser()
-  const customers = await getCustomers()
-  const products = await getProducts()
+
+  //@ts-ignore
+  const customers:Customer[] = await getCustomers()
+  //@ts-ignore
+  const products:Product[] = await getProducts()
   if(!getUser){
       redirect('/')
   }
@@ -41,10 +46,10 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        <Toaster/>
+        <Toaster position="top-center"/>
         <ProductModal />
-        {/* @ts-ignore */}
-        <SalesModal  customers={customers} products ={products}/>
+        {/*@ts-ignore*/}
+       <SalesModal  customers={customers} products ={products}/>
         <CustomerModal />
         <PurchaseModal />
         {children}

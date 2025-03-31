@@ -24,7 +24,7 @@ export default async function page() {
   
   const data = await getSales()
   
-  console.log(data)
+  //console.log(data)
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
       <AddNewSales /> 

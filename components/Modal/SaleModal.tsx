@@ -15,12 +15,18 @@ import Input from './Input';
 import { Customer } from '@/app/(main)/Customers/page';
 import { Product } from '@/app/(main)/Product/Column';
 
+type customer1 = {
+  Name:string;
+  Email:string;
+  Phone:string;
+}
 interface SalesModalProps {
-  customers: Customer[];
+  customers: customer1[];
   products: Product[];
 }
 
 const SalesModal = ({ customers, products }: SalesModalProps) => {
+  console.log(customers)
   const router = useRouter();
   const salesModal = useSalesModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +45,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
       customerId: '',
       productId: '',
       quantity: 1,
+      Price:1,
     },
   });
 
@@ -50,26 +57,12 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     setIsLoading(true);
     
     try {
-      const selectedCustomer = customers.find(c => c.email === data.customerId);
-      const selectedProduct = products.find(p => p.$id === data.productId);
-
-      if (!selectedCustomer || !selectedProduct) {
-        throw new Error('Invalid customer or product selection');
-      }
-
-      const totalPrice = selectedProduct.Price * data.quantity;
-      const saleData = {
-        customer: selectedCustomer,
-        product: selectedProduct,
-        quantity: data.quantity,
-        totalPrice,
-        date: new Date().toISOString()
-      };
-
-      // Here you would typically make an API call to record the sale
-      console.log('New Sale Recorded:', saleData);
+   
+      //@ts-ignore
+      data.Price = selectedProduct?.Price * data.quantity
+      console.log(data);
       
-      toast.success(`Sale recorded for ${selectedCustomer.name}`);
+      toast.success(`Sale recorded `);
       reset();
       salesModal.onClose();
       router.refresh();
@@ -80,18 +73,18 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     }
   };
 
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.includes(customerSearch) ||
-    customer.email.includes(customerSearch)
-  );
-
-  const filteredProducts = products.filter(product =>
-    product.Name.includes(productSearch) ||
-    product.Brand.includes(productSearch)
-  );
 
   const selectedProduct = products.find(p => p.$id === productId);
-
+  const filteredCustomers = customers.filter(customer => 
+    customer.Name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+    customer.Email.toLowerCase().includes(customerSearch.toLowerCase())
+  );
+  
+  // Filter products based on search term
+  const filteredProducts = products.filter(product => 
+    product.Name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    product.Brand.toLowerCase().includes(productSearch.toLowerCase())
+  );
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <ModalHeader 
@@ -114,7 +107,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 )}
               >
                 {customerId
-                  ? customers.find(c => c.email === customerId)?.name
+                  ? customers.find(c => c.Email === customerId)?.Name
                   : "Select customer"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -129,25 +122,27 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 <CommandList>
                   <CommandGroup>
                     {filteredCustomers.length > 0 ? (
-                      filteredCustomers.map(customer => (
+                      filteredCustomers.slice(0,5).map(customer => (
                         <CommandItem
-                          value={customer.email}
-                          key={customer.email}
+                        //@ts-ignore
+                          value={filteredCustomers?.Email}
+                          key={customer.Email}
                           onSelect={() => {
-                            setValue('customerId', customer.email, { shouldValidate: true });
+                          //@ts-ignore
+                            setValue('customerId', customer?.Email, { shouldValidate: true });
                             setCustomerSearch('');
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              customer.email === customerId ? "opacity-100" : "opacity-0"
+                              customer.Email === customerId ? "opacity-100" : "opacity-0"
                             )}
                           />
                           <div className="flex flex-col">
-                            <span>{customer.name}</span>
+                            <span>{customer.Name}</span>
                             <span className="text-xs text-muted-foreground">
-                              {customer.email}
+                              {customer.Email}
                             </span>
                           </div>
                         </CommandItem>
@@ -196,7 +191,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 <CommandList>
                   <CommandGroup>
                     {filteredProducts.length > 0 ? (
-                      filteredProducts.map(product => (
+                      filteredProducts.slice(0,5).map(product => (
                         <CommandItem
                           value={product.$id}
                           key={product.$id}
@@ -245,11 +240,10 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
           required
         />
 
-        {/* Total Price Display */}
         {selectedProduct && quantity && (
           <div className="flex justify-between items-center p-2 bg-muted rounded-md">
             <span className="text-sm font-medium">Total Price:</span>
-            <span className="font-bold">
+            <span className="font-bold" >
               GHS {(selectedProduct.Price * quantity).toFixed(2)}
             </span>
           </div>
@@ -265,7 +259,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
       onSubmit={handleSubmit(onSubmit)}
       actionLabel="Record Sale"
       body={bodyContent}
-      disabled={isLoading || !customerId || !productId}
+      disabled={isLoading}
     />
   );
 };

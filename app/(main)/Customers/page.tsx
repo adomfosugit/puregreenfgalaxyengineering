@@ -18,7 +18,7 @@ export type Customer = {
 export default async function page() {
   //@ts-ignore
   const data: Customer = await getCustomers()
-  console.log(data)
+  //console.log(data)
 
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
