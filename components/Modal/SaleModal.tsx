@@ -136,7 +136,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 <CommandList>
                   <CommandGroup>
                     {filteredCustomers.length > 0 ? (
-                      filteredCustomers.slice(0,5).map(customer => (
+                      filteredCustomers.map(customer => (
                         <CommandItem
                         //@ts-ignore
                           value={filteredCustomers?.Email}
@@ -205,7 +205,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 <CommandList>
                   <CommandGroup>
                     {filteredProducts.length > 0 ? (
-                      filteredProducts.slice(0,5).map(product => (
+                      filteredProducts.map(product => (
                         <CommandItem
                           value={product.$id}
                           key={product.$id}

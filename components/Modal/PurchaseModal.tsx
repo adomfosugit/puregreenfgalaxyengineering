@@ -128,7 +128,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
                 <CommandList>
                   <CommandGroup>
                     {filteredProducts.length > 0 ? (
-                      filteredProducts.slice(0,5).map(product => (
+                      filteredProducts.map(product => (
                         <CommandItem
                           value={product.$id}
                           key={product.$id}
