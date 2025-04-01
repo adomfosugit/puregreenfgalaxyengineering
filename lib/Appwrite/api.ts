@@ -1,13 +1,10 @@
 'use server'
 
-import { createSessionClient,createAdminClient } from "./Config";
-import {ID, Query} from 'node-appwrite'
-import {InputFile} from 'node-appwrite/file'
-import { cookies, headers } from "next/headers";
-import { parseStringify } from "@/lib/utils";
-import { redirect } from "next/navigation";
-import { Product } from "@/app/(main)/Product/Column";
 import { Customer } from "@/app/(main)/Customers/page";
+import { parseStringify } from "@/lib/utils";
+import { cookies } from "next/headers";
+import { ID } from 'node-appwrite';
+import { createAdminClient, createSessionClient } from "./Config";
 interface ProductFormValues {
   
   quantity: number; 
@@ -28,7 +25,7 @@ export type NewUser = {
 
 }
 // Authentication 
-const {NEXT_DATABASE_ID, NEXT_SALES_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
+const {NEXT_DATABASE_ID, NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
 
 export async function createSUserAccount(user:NewUser){ 
 
@@ -134,19 +131,31 @@ export async function getSales(){
     console.log(error)
   }
 } 
-export async function getLandById(id:string){
+export async function getPurchases(){
   try {
     const { database } = await createAdminClient()
-    const landData = await database.getDocument(
+    const PurchaseData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_LAND_COLLECTION_ID!,
-      id)
+      NEXT_PURCHASE_COLLECTION_ID!,)
       
-    return landData
+    return PurchaseData.documents
   } catch (error) {
     console.log(error)
   }
 } 
+//export async function getLandById(id:string){
+  //try {
+   // const { database } = await createAdminClient()
+    //const landData = await database.getDocument(
+    //  NEXT_DATABASE_ID!,
+   //   NEXT_LAND_COLLECTION_ID!,
+   //   id)
+      
+  //  return landData
+ // } catch (error) {
+ //   console.log(error)
+ // }
+//} 
 export async function uploadCustomer(data: Customer) {
   const {name,email, phone} = data;
 

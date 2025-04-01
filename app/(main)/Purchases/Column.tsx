@@ -11,11 +11,11 @@ import { PurchaseOrder } from "./page"
 
 export const columns: ColumnDef<PurchaseOrder>[] = [
   {
-    accessorKey: "ProductId",
-    header: "ProductId"
+    accessorKey: "$id",
+    header: "Purchase Id"
   },
   {
-    accessorKey: "Date",
+    accessorKey: "$createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -27,6 +27,40 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
         </Button>
       )}
   },
+
+  {
+    accessorKey: "product",
+    id:'productName',
+    
+     header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Product Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )},
+        cell: ({ row }) => (<div className="">{row.original.product[0].Name}</div>)
+  },
+
+  {
+    accessorKey: "product",
+     id:'Price',
+     header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Price
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )},
+      cell: ({ row }) => (<div className="capitalize">{row.original.product[0].Price}</div>)
+  },
+
   {
     accessorKey: "Quantity",
     
@@ -41,16 +75,16 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
           </Button>
         )}
   },
+ 
   {
-    accessorKey: "Price",
-    
+    accessorKey: "UploaderDetail",    
      header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Price
+            Uploaded By
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )}
