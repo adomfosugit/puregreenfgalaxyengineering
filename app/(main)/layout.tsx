@@ -51,7 +51,8 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         {/*@ts-ignore*/}
        <SalesModal  customers={customers} products ={products}/>
         <CustomerModal />
-        <PurchaseModal />
+        {/* @ts-ignore */}
+        <PurchaseModal products={products}  />
         {children}
 
       </body>

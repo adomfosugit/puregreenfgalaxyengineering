@@ -7,8 +7,8 @@ import { ArrowUpDown } from "lucide-react"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Product = {
-  $id: string
-  Price: number
+  $id: string;
+  Price: number;
   Brand:string;
   Name:string;
   Quantity:number;

@@ -14,10 +14,12 @@ import { cn } from '@/lib/utils';
 import Input from './Input';
 import { Customer } from '@/app/(main)/Customers/page';
 import { Product } from '@/app/(main)/Product/Column';
+import { uploadSales } from '@/lib/Appwrite/api';
 
 type customer1 = {
   Name:string;
   Email:string;
+  $id:string;
   Phone:string;
 }
 interface SalesModalProps {
@@ -44,14 +46,15 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     defaultValues: {
       customerId: '',
       productId: '',
-      quantity: 1,
       Price:1,
+      Quantity:1
     },
   });
 
   const customerId = watch('customerId');
   const productId = watch('productId');
-  const quantity = watch('quantity');
+  const Quantity = watch('Quantity');
+
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
@@ -59,22 +62,33 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     try {
    
       //@ts-ignore
-      data.Price = selectedProduct?.Price * data.quantity
+      data.Quantity = parseFloat(data.Quantity)
+      //@ts-ignore
+      data.Price = parseFloat(selectedProduct?.Price * data.Quantity)
       console.log(data);
+      //@ts-ignore
+      const upload = await uploadSales(data);
+      if(upload.success){
+        toast.success(`Sale recorded `);
+        reset();
+        salesModal.onClose();
+        router.refresh();
+      }else {
+        // Handle upload failure
+        toast(`Upload Unsuccessful: ${upload.error}`);
+      }
       
-      toast.success(`Sale recorded `);
-      reset();
-      salesModal.onClose();
-      router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to record sale');
     } finally {
       setIsLoading(false);
+      salesModal.onClose();
     }
   };
 
 
   const selectedProduct = products.find(p => p.$id === productId);
+  const selectedCustomer = customers.find(p => p.$id === customerId);
   const filteredCustomers = customers.filter(customer => 
     customer.Name.toLowerCase().includes(customerSearch.toLowerCase()) ||
     customer.Email.toLowerCase().includes(customerSearch.toLowerCase())
@@ -107,7 +121,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                 )}
               >
                 {customerId
-                  ? customers.find(c => c.Email === customerId)?.Name
+                  ? `${selectedCustomer?.Name}`
                   : "Select customer"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -129,7 +143,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                           key={customer.Email}
                           onSelect={() => {
                           //@ts-ignore
-                            setValue('customerId', customer?.Email, { shouldValidate: true });
+                            setValue('customerId', customer?.$id, { shouldValidate: true });
                             setCustomerSearch('');
                           }}
                         >
@@ -231,7 +245,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
 
         {/* Quantity Input */}
         <Input
-          id="quantity"
+          id="Quantity"
           label="Quantity"
           type="number"
           disabled={isLoading}
@@ -240,11 +254,11 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
           required
         />
 
-        {selectedProduct && quantity && (
+        {selectedProduct && Quantity && (
           <div className="flex justify-between items-center p-2 bg-muted rounded-md">
             <span className="text-sm font-medium">Total Price:</span>
             <span className="font-bold" >
-              GHS {(selectedProduct.Price * quantity).toFixed(2)}
+              GHS {(selectedProduct.Price * Quantity).toFixed(2)}
             </span>
           </div>
         )}

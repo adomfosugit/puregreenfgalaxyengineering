@@ -5,6 +5,7 @@ import { parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { ID } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
+import { SalesOrder } from "@/app/(main)/Sales/page";
 interface ProductFormValues {
   
   quantity: number; 
@@ -182,6 +183,66 @@ export async function uploadCustomer(data: Customer) {
     return { success: false, error: error?.message || "An error occurred while uploading the land." };
   }
 }
+type salesOrder1 = {
+  Price:number;
+  Quantity:number;
+  customerId:string;
+  productId:string;
+  uploader:string
+}
+export async function uploadSales(data: salesOrder1) {
+  const {Price, Quantity, customerId,productId} = data;
+
+  try {
+    // Upload land
+    const { database } = await createAdminClient();
+    const customerupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_SALES_COLLECTION_ID!,
+      ID.unique(),
+      {
+        Price:Price,
+        Quantity:Quantity,
+        customer:customerId,
+        product:productId,
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(customerupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
+export async function uploadPurchase(data: salesOrder1) {
+  const {Quantity,productId,uploader} = data;
+
+  try {
+    // Upload land
+    const { database } = await createAdminClient();
+    const customerupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PURCHASE_COLLECTION_ID!,
+      ID.unique(),
+      {
+        Quantity:Quantity,
+        Uploader: uploader,
+        product:productId,
+      
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(customerupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
+
 
 export async function uploadProduct(data: ProductFormValues) {
   const { category, price, description, quantity, brand, userEmail, name,width, length } = data;

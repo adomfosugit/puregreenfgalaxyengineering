@@ -42,7 +42,8 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )},
-        cell: ({ row }) => (<div className="">{row.original.product[0].Name}</div>)
+        //@ts-ignore
+       cell: ({ row }) => (<div className="">{row.original.product.Name }</div>)
   },
 
   {
@@ -58,7 +59,9 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )},
-      cell: ({ row }) => (<div className="capitalize">{row.original.product[0].Price}</div>)
+
+        //@ts-ignore
+     cell: ({ row }) => (<div className="capitalize">{row.original.product.Price}</div>)
   },
 
   {
@@ -77,7 +80,7 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
   },
  
   {
-    accessorKey: "UploaderDetail",    
+    accessorKey: "Uploader",    
      header: ({ column }) => {
         return (
           <Button

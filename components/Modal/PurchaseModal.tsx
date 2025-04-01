@@ -1,57 +1,36 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Modal from './Modal';
-import { toast } from 'sonner';
-import ModalHeader from './ModalHeader';
+import { Product } from '@/app/(main)/Product/Column';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import useSalesModal from '@/hooks/useSalesModal';
+import { getLoggedInUser, uploadPurchase } from '@/lib/Appwrite/api';
 import { cn } from '@/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import Input from './Input';
+import Modal from './Modal';
+import ModalHeader from './ModalHeader';
 import usePurchaseModal from '@/hooks/usePurchaseModal';
 
-// Dummy data
-const dummyCustomers = [
-  { id: 'cust-1', name: 'Solar Solutions Inc.', email: 'contact@solarsolutions.com' },
-  { id: 'cust-2', name: 'Green Energy Co-op', email: 'orders@greencoop.org' },
-  { id: 'cust-3', name: 'EcoHome Installations', email: 'sales@ecohome.com' },
-  { id: 'cust-4', name: 'Sunshine Farms', email: 'manager@sunshinefarms.com' },
-];
+type customer1 = {
+  Name:string;
+  Email:string;
+  $id:string;
+  Phone:string;
+}
+interface SalesModalProps {
+  customers: customer1[];
+  products: Product[];
+}
 
-const dummyProducts = [
-  { id: 'SP-1001', name: 'LG Neon R 375W', brand: 'LG', price: 249 },
-  { id: 'SP-1002', name: 'Canadian Solar HiKu 400W', brand: 'Canadian Solar', price: 189 },
-  { id: 'SP-1003', name: 'SunPower Maxeon 3 400W', brand: 'SunPower', price: 319 },
-  { id: 'INV-2001', name: 'SolarEdge SE5000H', brand: 'SolarEdge', price: 1299 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-  { id: 'BAT-3001', name: 'Tesla Powerwall 2', brand: 'Tesla', price: 6999 },
-];
-
-const PurchaseModal = () => {
+const PurchaseModal = ({ products }: SalesModalProps) => {
   const router = useRouter();
   const salesModal = usePurchaseModal();
   const [isLoading, setIsLoading] = useState(false);
-  const [customerSearch, setCustomerSearch] = useState('');
   const [productSearch, setProductSearch] = useState('');
 
   const {
@@ -63,47 +42,63 @@ const PurchaseModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      price: 1,
+      customerId: '',
       productId: '',
-      quantity: 1,
+      Price:1,
+      Quantity:1
     },
   });
 
   const customerId = watch('customerId');
   const productId = watch('productId');
+  const Quantity = watch('Quantity');
+
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
+    
     try {
-      const customer = dummyCustomers.find(c => c.id === data.customerId);
-      const product = dummyProducts.find(p => p.id === data.productId);
-
-      console.log('New Sale Recorded:', {
-        customer,
-        product,
-        quantity: data.quantity,
-        totalPrice: product ? product.price * data.quantity : 0,
-        date: new Date().toISOString()
-      });
-
-      toast.success(`Sale recorded for ${customer?.name}`);
-      reset();
-      salesModal.onClose();
+      const user = await getLoggedInUser()
+      //@ts-ignore
+      data.Quantity = parseFloat(data.Quantity)
+      data.uploader = user.email
+      //@ts-ignore
+      data.Price = parseFloat(selectedProduct?.Price)
+      console.log(data);
+      //@ts-ignore
+      const upload = await uploadPurchase(data);
+      if(upload.success){
+        toast.success(`Purchase recorded `);
+        reset();
+        salesModal.onClose();
+        router.refresh();
+      }else {
+        // Handle upload failure
+        toast(`Upload Unsuccessful: ${upload.error}`);
+      }
+      
     } catch (error) {
-      toast.error('Failed to record sale');
+      toast.error(error instanceof Error ? error.message : 'Failed to record sale');
     } finally {
       setIsLoading(false);
+      salesModal.onClose();
     }
   };
 
+
+  const selectedProduct = products?.find(p => p.$id === productId);
+  
+  // Filter products based on search term
+  const filteredProducts = products.filter(product => 
+    product.Name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    product.Brand.toLowerCase().includes(productSearch.toLowerCase())
+  );
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <ModalHeader 
         title="Record New Purchase" 
-        subtitle="Restock product " 
+        subtitle="Create purchase" 
       />
-
-      
         {/* Product Search Selector */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Product</label>
@@ -118,8 +113,7 @@ const PurchaseModal = () => {
                 )}
               >
                 {productId
-                  ? `${dummyProducts.find((product) => product.id === productId)?.brand} 
-                     ${dummyProducts.find((product) => product.id === productId)?.name}`
+                  ? `${selectedProduct?.Brand} ${selectedProduct?.Name}`
                   : "Select product"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -133,34 +127,35 @@ const PurchaseModal = () => {
                 />
                 <CommandList>
                   <CommandGroup>
-                    {dummyProducts
-                      .filter((product) =>
-                        product.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-                        product.brand.toLowerCase().includes(productSearch.toLowerCase())
-                      )
-                      .map((product) => (
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.slice(0,5).map(product => (
                         <CommandItem
-                          value={product.id}
-                          key={product.id}
+                          value={product.$id}
+                          key={product.$id}
                           onSelect={() => {
-                            setValue('productId', product.id);
+                            setValue('productId', product.$id, { shouldValidate: true });
                             setProductSearch('');
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              product.id === productId ? "opacity-100" : "opacity-0"
+                              product.$id === productId ? "opacity-100" : "opacity-0"
                             )}
                           />
                           <div className="flex flex-col">
-                            <span>{product.brand} {product.name}</span>
+                            <span>{product.Brand} {product.Name}</span>
                             <span className="text-xs text-muted-foreground">
-                              GHS {product.price}
+                              GHS {product.Price.toFixed(2)}
                             </span>
                           </div>
                         </CommandItem>
-                      ))}
+                      ))
+                    ) : (
+                      <CommandItem className="text-muted-foreground">
+                        No products found
+                      </CommandItem>
+                    )}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -173,7 +168,7 @@ const PurchaseModal = () => {
 
         {/* Quantity Input */}
         <Input
-          id="quantity"
+          id="Quantity"
           label="Quantity"
           type="number"
           disabled={isLoading}
@@ -181,15 +176,8 @@ const PurchaseModal = () => {
           errors={errors}
           required
         />
-        <Input
-          id="price"
-          label="price"
-          type="number"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
+
+
       </div>
     
   );
@@ -199,7 +187,7 @@ const PurchaseModal = () => {
       isOpen={salesModal.isOpen}
       onClose={salesModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
-      actionLabel="Record Purchase"
+      actionLabel="Record Sale"
       body={bodyContent}
       disabled={isLoading}
     />
