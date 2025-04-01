@@ -29,7 +29,7 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
   },
 
   {
-    accessorKey: "product",
+    accessorKey: "product.Name",
     id:'productName',
     
      header: ({ column }) => {
@@ -43,7 +43,7 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
           </Button>
         )},
         //@ts-ignore
-       cell: ({ row }) => (<div className="">{row.original.product.Name }</div>)
+      // cell: ({ row }) => (<div className="">{row.original.product.Name }</div>)
   },
 
   {
