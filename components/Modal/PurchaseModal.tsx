@@ -187,7 +187,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
       isOpen={salesModal.isOpen}
       onClose={salesModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
-      actionLabel="Record Sale"
+      actionLabel="Record Purchase"
       body={bodyContent}
       disabled={isLoading}
     />
