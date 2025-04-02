@@ -144,19 +144,140 @@ export async function getPurchases(){
     console.log(error)
   }
 } 
-//export async function getLandById(id:string){
-  //try {
-   // const { database } = await createAdminClient()
-    //const landData = await database.getDocument(
-    //  NEXT_DATABASE_ID!,
-   //   NEXT_LAND_COLLECTION_ID!,
-   //   id)
+export async function getProductId(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_PRODUCT_COLLECTION_ID!,
+     id)
       
-  //  return landData
- // } catch (error) {
- //   console.log(error)
- // }
-//} 
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
+
+export async function createSalesAndUpdateProduct(data: salesOrder1) {
+  const { Price, Quantity, customerId, productId, uploader } = data;
+
+  try {
+    const { database } = await createAdminClient();
+
+    // Step 1: Get the product using your existing function
+    const product = await getProductId(productId);
+    
+    // Check if product exists
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+
+    const currentQuantity = product.Quantity;
+    
+    // Check if sufficient quantity is available
+    if (currentQuantity < Quantity) {
+      return { success: false, error: "Insufficient product quantity" };
+    }
+
+    // Step 2: Create the sales document using your existing function
+    const salesResult = await uploadSales({
+      Price,
+      Quantity,
+      customerId,
+      productId,
+      uploader
+    });
+
+    if (!salesResult?.success) {
+      return { 
+        success: false, 
+        error: salesResult?.error || "Failed to create sales record" 
+      };
+    }
+
+    // Step 3: Update the product quantity
+    const updatedProduct = await database.updateDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+      productId,
+      {
+        Quantity: currentQuantity - Quantity
+      }
+    );
+
+    return { 
+      success: true, 
+      data: {
+        sales: salesResult.data,
+        product: parseStringify(updatedProduct)
+      } 
+    };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { 
+      success: false, 
+
+      //@ts-ignore
+      error: error?.message || "An error occurred while processing the sale." 
+    };
+  }
+}
+export async function createPurchaseAndUpdateProduct(data: salesOrder1) {
+  const { Quantity, productId, uploader } = data;
+
+  try {
+    const { database } = await createAdminClient();
+
+    // Step 1: Get the product using your existing function
+    const product = await getProductId(productId);
+    
+    // Check if product exists
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+
+    const currentQuantity = product.Quantity;
+    
+// Step 2: Create the sales document using your existing function
+//@ts-ignore
+    const salesResult = await uploadPurchase({Quantity,productId,uploader});
+
+    if (!salesResult?.success) {
+      return { 
+        success: false, 
+        error: salesResult?.error || "Failed to create sales record" 
+      };
+    }
+
+    // Step 3: Update the product quantity
+    const updatedProduct = await database.updateDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+      productId,
+      {
+        Quantity: currentQuantity + Quantity
+      }
+    );
+
+    return { 
+      success: true, 
+      data: {
+        purchase: salesResult.data,
+        product: parseStringify(updatedProduct)
+      } 
+    };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { 
+      success: false, 
+
+      //@ts-ignore
+      error: error?.message || "An error occurred while processing the sale." 
+    };
+  }
+}
 export async function uploadCustomer(data: Customer) {
   const {name,email, phone} = data;
 

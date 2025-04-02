@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import useSalesModal from '@/hooks/useSalesModal';
-import { getLoggedInUser, uploadPurchase } from '@/lib/Appwrite/api';
+import { createPurchaseAndUpdateProduct, getLoggedInUser, uploadPurchase } from '@/lib/Appwrite/api';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -66,7 +66,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
       data.Price = parseFloat(selectedProduct?.Price)
       console.log(data);
       //@ts-ignore
-      const upload = await uploadPurchase(data);
+      const upload = await createPurchaseAndUpdateProduct(data);
       if(upload.success){
         toast.success(`Purchase recorded `);
         reset();

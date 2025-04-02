@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import Input from './Input';
 import { Customer } from '@/app/(main)/Customers/page';
 import { Product } from '@/app/(main)/Product/Column';
-import { uploadSales } from '@/lib/Appwrite/api';
+import { createSalesAndUpdateProduct, uploadSales } from '@/lib/Appwrite/api';
 
 type customer1 = {
   Name:string;
@@ -67,7 +67,8 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
       data.Price = parseFloat(selectedProduct?.Price * data.Quantity)
       console.log(data);
       //@ts-ignore
-      const upload = await uploadSales(data);
+      //const upload = await uploadSales(data);
+      const upload = await createSalesAndUpdateProduct(data);
       if(upload.success){
         toast.success(`Sale recorded `);
         reset();
