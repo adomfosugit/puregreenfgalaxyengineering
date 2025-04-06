@@ -3,7 +3,7 @@
 import { Customer } from "@/app/(main)/Customers/page";
 import { parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
-import { ID } from 'node-appwrite';
+import { ID, Query } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
 import { SalesOrder } from "@/app/(main)/Sales/page";
 interface ProductFormValues {
@@ -101,7 +101,8 @@ export async function getProducts(){
     const { database } = await createAdminClient()
     const ProductData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_PRODUCT_COLLECTION_ID!,)
+      NEXT_PRODUCT_COLLECTION_ID!,
+    [Query.limit(100)])
       
     return ProductData.documents
   } catch (error) {
@@ -113,7 +114,8 @@ export async function getCustomers(){
     const { database } = await createAdminClient()
     const CustomerData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_CUSTOMER_COLLECTION_ID!,)
+      NEXT_CUSTOMER_COLLECTION_ID!,
+      [Query.limit(100)])
       
     return CustomerData.documents
   } catch (error) {
@@ -125,7 +127,8 @@ export async function getSales(){
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_SALES_COLLECTION_ID!,)
+      NEXT_SALES_COLLECTION_ID!,
+    [Query.limit(100)])
       
     return SalesData.documents
   } catch (error) {
@@ -137,7 +140,8 @@ export async function getPurchases(){
     const { database } = await createAdminClient()
     const PurchaseData = await database.listDocuments(
       NEXT_DATABASE_ID!,
-      NEXT_PURCHASE_COLLECTION_ID!,)
+      NEXT_PURCHASE_COLLECTION_ID!,
+    [Query.limit(100)])
       
     return PurchaseData.documents
   } catch (error) {
