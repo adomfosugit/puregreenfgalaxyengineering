@@ -13,6 +13,7 @@ export type PurchaseOrder = {
   Price:number;
   Date:string;
   product: Product[]
+  $createdAt: Date
 };
 
 

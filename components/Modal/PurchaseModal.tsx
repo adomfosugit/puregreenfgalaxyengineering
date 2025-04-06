@@ -68,7 +68,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
       //@ts-ignore
       const upload = await createPurchaseAndUpdateProduct(data);
       if(upload.success){
-        toast.success(`Purchase recorded `);
+        toast.success(`Stock Recorded `);
         reset();
         salesModal.onClose();
         router.refresh();
@@ -187,7 +187,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
       isOpen={salesModal.isOpen}
       onClose={salesModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
-      actionLabel="Record Purchase"
+      actionLabel="Record Stock"
       body={bodyContent}
       disabled={isLoading}
     />

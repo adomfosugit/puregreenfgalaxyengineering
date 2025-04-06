@@ -22,10 +22,13 @@ const Navigator = (props: Props) => {
       <NavigationMenuLink href='/Sales' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Sales' ? 'bg-primary text-white' : ''}`}>Sales</NavigationMenuLink>
     </NavigationMenuItem>
     <NavigationMenuItem>
-      <NavigationMenuLink href='/Purchases' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Purchases' ? 'bg-primary text-white' : ''}`}>Purchases</NavigationMenuLink>
+      <NavigationMenuLink href='/Purchases' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Purchases' ? 'bg-primary text-white' : ''}`}>Restock</NavigationMenuLink>
     </NavigationMenuItem>
     <NavigationMenuItem>
       <NavigationMenuLink href='/Customers' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Customers' ? 'bg-primary text-white' : ''}`}>Customers</NavigationMenuLink>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink href='/Advertisement' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Customers' ? 'bg-primary text-white' : ''}`}>Advertisement</NavigationMenuLink>
     </NavigationMenuItem>
   
  

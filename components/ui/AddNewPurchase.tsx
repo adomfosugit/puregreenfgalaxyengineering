@@ -8,7 +8,7 @@ type Props = {}
 const AddNewPurchase = (props: Props) => {
     const purchasemodal = usePurchaseModal()
   return (
-    <Button className="w-[150px] " onClick={purchasemodal.onOpen}>Add Purchase </Button>
+    <Button className="w-[150px] " onClick={purchasemodal.onOpen}>Add Stock </Button>
   )
 }
 

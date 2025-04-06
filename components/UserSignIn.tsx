@@ -35,6 +35,7 @@ const UserSignIn = (props: Props) => {
   // 2. Define a submit handler.
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
     const session = await signInAccount(values.Email,values.Password)
     if(!session.success){
     return toast(`${session.error}`)
@@ -79,7 +80,7 @@ const UserSignIn = (props: Props) => {
         />
         
         <Button type="submit" className='w-full '>{isLoading ? 
-        <div className='flex-center'>  Loading...</div>
+        <div className='flex-center cursor-not-allowed'>  Logging In...</div>
           : 'Log In'} </Button>
       </form>
     </Form>

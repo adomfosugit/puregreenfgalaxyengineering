@@ -28,7 +28,14 @@ export const columns: ColumnDef<SalesOrder>[] = [
         </Button>
       )
     },
-    
+    cell: ({ row }) => {
+      const date = new Date(row.original.$createdAt);
+      return (
+        <div className="">
+          {date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}
+        </div>
+      )
+    }
   },
   {
     accessorKey: "customer.Name",

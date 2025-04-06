@@ -223,6 +223,96 @@ export async function createSalesAndUpdateProduct(data: salesOrder1) {
     };
   }
 }
+export async function createSalesAndUpdateProduct1(data: {
+  customerId: string;
+  products: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+  }>;
+}) {
+  const { customerId, products} = data;
+
+  try {
+    const { database } = await createAdminClient();
+    
+    // Step 1: Validate all products and check quantities
+    const productValidations = await Promise.all(
+      products.map(async (item) => {
+        const product = await getProductId(item.productId);
+        if (!product) {
+          return { valid: false, error: `Product ${item.productId} not found` };
+        }
+        if (product.Quantity < item.quantity) {
+          return { 
+            valid: false, 
+            error: `Insufficient quantity for product ${product.Name}` 
+          };
+        }
+        return { valid: true, product };
+      })
+    );
+
+    // Check for any validation errors
+    const validationError = productValidations.find(v => !v.valid);
+    if (validationError) {
+      return { success: false, error: validationError.error };
+    }
+
+    // Calculate total price (sum of all product prices * quantities)
+    const totalPrice = products.reduce(
+      (sum, item) => sum + (item.price * item.quantity),
+      0
+    );
+        // Step 2: Create the sales document
+    const salesResult = await uploadSales({
+      Price: totalPrice,
+      ItemQuantity: [...products.map(item => item.quantity)],
+      Quantity: products.reduce((sum, item) => sum + item.quantity, 0),
+      customerId,
+      //@ts-ignore
+      productId: [ ...products.map(item => item.productId) ],
+    
+    });
+
+    if (!salesResult?.success) {
+      return { 
+        success: false, 
+        error: salesResult?.error || "Failed to create sales record" 
+      };
+    }
+
+    // Step 3: Update all product quantities
+    const updatePromises = products.map(item => {
+      return database.updateDocument(
+        NEXT_DATABASE_ID!,
+        NEXT_PRODUCT_COLLECTION_ID!,
+        item.productId,
+        {
+          Quantity: productValidations
+            .find(v => v.valid && v.product?.$id === item.productId)
+            ?.product?.Quantity! - item.quantity
+        }
+      );
+    });
+
+    const updatedProducts = await Promise.all(updatePromises);
+
+    return { 
+      success: true, 
+      data: {
+        sales: salesResult.data,
+        products: parseStringify(updatedProducts)
+      } 
+    };
+  } catch (error) {
+    console.log(error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "An error occurred while processing the sale." 
+    };
+  }
+}
 export async function createPurchaseAndUpdateProduct(data: salesOrder1) {
   const { Quantity, productId, uploader } = data;
 

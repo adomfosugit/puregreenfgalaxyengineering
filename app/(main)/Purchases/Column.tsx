@@ -12,7 +12,7 @@ import { PurchaseOrder } from "./page"
 export const columns: ColumnDef<PurchaseOrder>[] = [
   {
     accessorKey: "$id",
-    header: "Purchase Id"
+    header: "Restock Id"
   },
   {
     accessorKey: "$createdAt",
@@ -22,10 +22,18 @@ export const columns: ColumnDef<PurchaseOrder>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Purchase Date
+          Restock Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )}
+      )},
+      cell: ({ row }) => {
+        const date = new Date(row.original.$createdAt);
+        return (
+          <div className="">
+            {date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}
+          </div>
+        )
+      }
   },
 
   {

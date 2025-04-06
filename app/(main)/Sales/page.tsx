@@ -16,6 +16,7 @@ export type SalesOrder = {
   Quantity:number;
   Price:number;
   product: Product[]
+  $createdAt:Date
 };
 
 

@@ -55,7 +55,7 @@ export function DataTable<TData, TValue>({
     <div className="rounded-md border">
      <div className="flex items-center py-4 px-2">
         <Input
-          placeholder="Filter Purchases by Product..."
+          placeholder="Filter stocks by Product..."
           value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("productName")?.setFilterValue(event.target.value)
