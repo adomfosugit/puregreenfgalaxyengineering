@@ -13,7 +13,7 @@ import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from '@
 import { cn } from '@/lib/utils';
 //import Input from './Input';
 import { Product } from '@/app/(main)/Product/Column';
-import { createSalesAndUpdateProduct, createSalesAndUpdateProduct1 } from '@/lib/Appwrite/api';
+import { createSalesAndUpdateProduct1 } from '@/lib/Appwrite/api';
 import { Input } from '../ui/input';
 
 type Customer = {

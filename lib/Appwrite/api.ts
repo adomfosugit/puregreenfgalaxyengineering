@@ -158,77 +158,13 @@ export async function getProductId(id:string){
  }
 } 
 
-export async function createSalesAndUpdateProduct(data: salesOrder1) {
-  const { Price, Quantity, customerId, productId, uploader } = data;
-
-  try {
-    const { database } = await createAdminClient();
-
-    // Step 1: Get the product using your existing function
-    const product = await getProductId(productId);
-    
-    // Check if product exists
-    if (!product) {
-      return { success: false, error: "Product not found" };
-    }
-
-    const currentQuantity = product.Quantity;
-    
-    // Check if sufficient quantity is available
-    if (currentQuantity < Quantity) {
-      return { success: false, error: "Insufficient product quantity" };
-    }
-
-    // Step 2: Create the sales document using your existing function
-    const salesResult = await uploadSales({
-      Price,
-      Quantity,
-      customerId,
-      productId,
-      uploader
-    });
-
-    if (!salesResult?.success) {
-      return { 
-        success: false, 
-        error: salesResult?.error || "Failed to create sales record" 
-      };
-    }
-
-    // Step 3: Update the product quantity
-    const updatedProduct = await database.updateDocument(
-      NEXT_DATABASE_ID!,
-      NEXT_PRODUCT_COLLECTION_ID!,
-      productId,
-      {
-        Quantity: currentQuantity - Quantity
-      }
-    );
-
-    return { 
-      success: true, 
-      data: {
-        sales: salesResult.data,
-        product: parseStringify(updatedProduct)
-      } 
-    };
-  } catch (error) {
-    console.log(error);
-    //@ts-ignore
-    return { 
-      success: false, 
-
-      //@ts-ignore
-      error: error?.message || "An error occurred while processing the sale." 
-    };
-  }
-}
 export async function createSalesAndUpdateProduct1(data: {
   customerId: string;
   products: Array<{
     productId: string;
     quantity: number;
     price: number;
+    
   }>;
 }) {
   const { customerId, products} = data;
@@ -267,14 +203,14 @@ export async function createSalesAndUpdateProduct1(data: {
         // Step 2: Create the sales document
     const salesResult = await uploadSales({
       Price: totalPrice,
-      ItemQuantity: [...products.map(item => item.quantity)],
+      Itemqty: [...products.map(item => item.quantity)],
       Quantity: products.reduce((sum, item) => sum + item.quantity, 0),
       customerId,
       //@ts-ignore
       productId: [ ...products.map(item => item.productId) ],
     
     });
-
+    console.log(products.map(item => item.quantity))
     if (!salesResult?.success) {
       return { 
         success: false, 
@@ -400,9 +336,10 @@ type salesOrder1 = {
   customerId:string;
   productId:string;
   uploader:string
+  Itemqty:number[]
 }
 export async function uploadSales(data: salesOrder1) {
-  const {Price, Quantity, customerId,productId} = data;
+  const {Price, Quantity, customerId,productId,Itemqty} = data;
 
   try {
     // Upload land
@@ -416,6 +353,7 @@ export async function uploadSales(data: salesOrder1) {
         Quantity:Quantity,
         customer:customerId,
         product:productId,
+        Itemqty: Itemqty,
       }
     );
 
