@@ -161,6 +161,19 @@ export async function getProductId(id:string){
    console.log(error)
  }
 } 
+export async function getSalesId(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_SALES_COLLECTION_ID!,
+     id)
+      
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
 
 export async function createSalesAndUpdateProduct1(data: {
   customerId: string;

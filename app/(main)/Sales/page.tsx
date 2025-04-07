@@ -6,6 +6,7 @@ import { getCustomers, getSales } from "@/lib/Appwrite/api";
 import { Product } from "../Product/Column";
 
 export type SalesOrder = {
+  $id:string;
   orderId: string;
   orderDate: string;
   customer: {

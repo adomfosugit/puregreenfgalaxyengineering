@@ -5,14 +5,31 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { SalesOrder } from "./page"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-import { format } from 'date-fns';
+
+import Link from "next/link"
 
 export const columns: ColumnDef<SalesOrder>[] = [
-  {
-    accessorKey: "$id",
-    header: "Order Id"
+  { 
+    
+    accessorKey: ("$id") ,
+     header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Order Id
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      return (
+        <Link href={`Sales/${row.original.$id}`} className="text-blue-900">
+          {row.original.$id}
+        </Link>
+      )
+    }
   },
   { 
     
