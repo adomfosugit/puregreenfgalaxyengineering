@@ -4,6 +4,8 @@ import { columns } from "./Column";
 import { DataTable } from "./data-table"
 import { getCustomers, getSales } from "@/lib/Appwrite/api";
 import { Product } from "../Product/Column";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type SalesOrder = {
   $id:string;
@@ -30,9 +32,10 @@ export default async function page() {
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
       <AddNewSales /> 
-     
-      {/* @ts-ignore */}
-      <DataTable columns={columns} data={data} />
+
+         {/* @ts-ignore */}
+         <DataTable columns={columns} data={data} />
+
     </div>
   )
 }
