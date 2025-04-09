@@ -135,6 +135,49 @@ export async function getSales(){
     console.log(error)
   }
 } 
+
+export async function getSalesYTD(date){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_SALES_COLLECTION_ID!,
+    [Query.greaterThan('$createdAt', date),
+      Query.select(['Price']),  Query.limit(1000)
+    ])
+      
+    return SalesData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getProductsYTD(){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+    [Query.select(['Price','Quantity']),  Query.limit(1000)])
+      
+    return SalesData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getPurchaseYTD(date){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_PURCHASE_COLLECTION_ID!,
+      [Query.greaterThan('$createdAt', date),  Query.limit(1000)
+      ])
+      
+    return SalesData.total
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function getPurchases(){
   try {
     const { database } = await createAdminClient()
