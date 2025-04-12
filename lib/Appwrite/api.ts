@@ -522,3 +522,22 @@ export async function sendTermsConditions( content:string , userId:string ){
     
   }
 }
+// Recovery and Account Update
+export async function createAccountRecovery(Email:string){ 
+  try {
+    const {account} = await createAdminClient()
+    const promise = await account.createRecovery(Email , process.env.NEXT_PUBLIC_RECOVERY_URL!)
+    return parseStringify(promise)
+  } catch (error) {
+    console.log(error)
+  }   
+}
+export async function createAccountUpdate(ID:string, secret:string, password:string){ 
+  try {
+    const {account} = await createAdminClient()
+    const promise = await account.updateRecovery(ID, secret, password)
+    return parseStringify(promise)
+  } catch (error) {
+    console.log(error)
+  }   
+}

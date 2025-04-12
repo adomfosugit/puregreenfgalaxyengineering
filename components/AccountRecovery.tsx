@@ -10,17 +10,16 @@ import { Input } from '@/components/ui/input'
 import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
-import { signInAccount } from '@/lib/Appwrite/api';
-import { toast } from "sonner"
-
+import { createAccountRecovery } from '@/lib/Appwrite/api';
+import { toast, Toaster } from 'sonner';
 type Props = {}
 
 const formSchema = z.object({
   Email: z.string({required_error:'Email required'}).email('Please Enter a Valid Email'),
-  Password: z.string({required_error:'Password is required'})
+
 })
 
-const UserSignIn = (props: Props) => {
+const AccountRecovery = (props: Props) => {
   
   const router = useRouter()
   const [isLoading, setIsLoading] =  useState<boolean>(false)
@@ -28,26 +27,26 @@ const UserSignIn = (props: Props) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       Email: "",
-      Password: "",
+    
     },
   })
-  
+ 
   // 2. Define a submit handler.
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    const session = await signInAccount(values.Email,values.Password)
-    if(!session.success){
-    return toast(`${session.error}`)
-    }
-    router.push('/Dashboard')
+   createAccountRecovery(values.Email)
+   toast('A reset link has been sent to your email')
     
   }
   return (
-    <div className='w-full  p-12 '>
+    <div className='w-full p-12 '>
 
     <div className=' w-full flex flex-col items-start gap-y-[20px]  '>
  
+      <div>
+        <h1 className='text-xl font-semibold'>Reset Your Password</h1>
+        <h1 className='text-sm text-zinc-500'>please enter your email a reset link will be sent to you</h1>
+      </div>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
         <FormField
@@ -55,7 +54,7 @@ const UserSignIn = (props: Props) => {
           name="Email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm'>Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="Email" {...field} />
               </FormControl>
@@ -64,40 +63,21 @@ const UserSignIn = (props: Props) => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="Password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className='text-sm'>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="Password" {...field} type='password'/>
-              </FormControl>
-              <FormMessage />
-
-          
-           
-            </FormItem>
-          )}
-        />
-        <Link href='/AccountRecovery' className='flex text-red-400 text-xs justify-end hover: cursor-pointer'>
-        Forgot Password?</Link>
-        <Button type="submit" className='w-full '>{isLoading ? 
-        <div className='flex-center cursor-not-allowed'>  Logging In...</div>
-          : 'Log In'} </Button>
+    
+     
+        <Button type="submit" className='w-full'> 
+        Submit </Button>
       </form>
     </Form>
       </div>
-      <div className='flex-col  lg:flex text-center text-sm text-neutral-600 p-3 items-center justify-center '>
-        <p className='mr-1'>Don't have an account ?</p> 
-      <Link href= '/Signup' className='text-blue text-small ml-5'>Create an account</Link>
-      </div>
+ 
 
+      </div>
     
       
-    </div>
+
     
   )
 }
 
-export default UserSignIn
+export default AccountRecovery;
