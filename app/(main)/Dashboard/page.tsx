@@ -3,6 +3,7 @@ import { CalendarDatePicker } from '@/components/CalendarDatePicker'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getLoggedInUser, getProductsYTD, getPurchaseYTD, getSalesYTD } from '@/lib/Appwrite/api'
+import Link from 'next/link'
 import React from 'react'
 
 type Props = {}
@@ -57,7 +58,7 @@ const page = async (props: Props) => {
 
           <div className="space-y-4">
          
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -67,7 +68,10 @@ const page = async (props: Props) => {
                 <CardContent>
                   <div className="text-3xl font-bold">{formattedTotal}</div>
                 </CardContent>
+                <Link href={'/Sales'}>
+                
                 <p className='text-sm text-primary font-medium text-center justify-center'>{numberOfSales} sales </p>
+                </Link>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
