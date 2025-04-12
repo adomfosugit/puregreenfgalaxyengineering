@@ -54,10 +54,18 @@ const page = (props: Props) => {
     router.push('/')
   }
   return (
-    <div className='flex items-center justify-center mx-auto'>
-         <div className='w-full p-12 '>
+    <div className='flex items-center justify-center p-5 '>
+         <div className=''>
 
     <div className=' w-full flex flex-col items-start gap-y-[20px]  '>
+    <div className="justify-center mx-auto">
+        <Image src={`/PuregreenLogo.jpg`} height={100} width={100} alt="logo"/>
+      </div>
+    <div className="mt-3">
+      <h1 className='text-2xl  text-center text-neutral'>Inventory Management System</h1>
+    </div>
+
+
       <h1 className='text-primary font-bold'>Reset Password </h1>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -68,7 +76,7 @@ const page = (props: Props) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Password" {...field} type='password' />
+                <Input placeholder="Password" {...field} type='password'  />
               </FormControl>
              
               <FormMessage />

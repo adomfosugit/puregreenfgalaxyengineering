@@ -13,8 +13,10 @@ const page = async (props: Props) => {
   const userEmail = user.email
   console.log(userEmail)
   const allowedEmails = [
-    'adomfosugit@gmail.com'
-  ];
+    'adomfosugit@gmail.com',
+    'niimartey3160@gmail.com',
+    'manugideon@gmail.com',
+];
 
   // Check if current user's email is in the allowed list
   const isAuthorized = allowedEmails.includes(userEmail);
