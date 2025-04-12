@@ -1,13 +1,20 @@
 //import Logo from "@/components/Website/Logo";
 import Navigator from "./Navigator";
 import Auth from "./Auth";
-import { getLoggedInUser } from "@/lib/Appwrite/api";
+import { getLoggedInUser, LogOutUser } from "@/lib/Appwrite/api";
 import { NavigationMenu } from "@radix-ui/react-navigation-menu";
 import Image from "next/image";
+import { Button } from "./ui/button";
 
 
 const Navbar = async () => {
     const user =await getLoggedInUser()
+    const logoutuser = async () => {
+      const logout = await LogOutUser()
+      // @ts-ignore
+      if(logout) router.push('/')
+      
+  }
     return (
       <div className='border-b-2  px-8 py-2 flex justify-between items-center sticky top-0 z-10 bg-white '>
       
@@ -23,6 +30,10 @@ const Navbar = async () => {
 
           <NavigationMenu />
           </div>
+          <Button onClick={logoutuser}>
+          Log out
+        </Button>
+
       </div>
     )
   }
