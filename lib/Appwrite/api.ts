@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { ID, Query } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
 import { SalesOrder } from "@/app/(main)/Sales/page";
+import {InputFile} from 'node-appwrite/file'
 interface ProductFormValues {
   
   quantity: number; 
@@ -17,6 +18,7 @@ interface ProductFormValues {
   userEmail: string
   category: string
   name:string;
+  imageSrc: string[];
 
 }
 export type NewUser = {
@@ -102,7 +104,7 @@ export async function getProducts(){
     const ProductData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_PRODUCT_COLLECTION_ID!,
-    [Query.limit(100)])
+    [Query.limit(200)])
       
     return ProductData.documents
   } catch (error) {
@@ -115,7 +117,7 @@ export async function getCustomers(){
     const CustomerData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_CUSTOMER_COLLECTION_ID!,
-      [Query.limit(100)])
+      [Query.limit(100), Query.orderDesc('$createdAt') ])
       
     return CustomerData.documents
   } catch (error) {
@@ -128,7 +130,7 @@ export async function getSales(){
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_SALES_COLLECTION_ID!,
-    [Query.limit(100)])
+    [Query.limit(100), Query.orderDesc('$createdAt') ])
       
     return SalesData.documents
   } catch (error) {
@@ -184,7 +186,8 @@ export async function getPurchases(){
     const PurchaseData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_PURCHASE_COLLECTION_ID!,
-    [Query.limit(100)])
+    [Query.limit(100), Query.orderAsc('$createdAt') 
+    ])
       
     return PurchaseData.documents
   } catch (error) {
@@ -220,6 +223,8 @@ export async function getSalesId(id:string){
 
 export async function createSalesAndUpdateProduct1(data: {
   customerId: string;
+  Tax:number;
+  Discount:number;
   products: Array<{
     productId: string;
     quantity: number;
@@ -227,7 +232,7 @@ export async function createSalesAndUpdateProduct1(data: {
     
   }>;
 }) {
-  const { customerId, products} = data;
+  const { customerId, products, Tax, Discount} = data;
 
   try {
     const { database } = await createAdminClient();
@@ -260,14 +265,18 @@ export async function createSalesAndUpdateProduct1(data: {
       (sum, item) => sum + (item.price * item.quantity),
       0
     );
+    const totalPriceTax = totalPrice + totalPrice * (Tax / 100) 
+    const totalPriceDiscounted = totalPriceTax - (totalPriceTax * (Discount / 100))
         // Step 2: Create the sales document
     const salesResult = await uploadSales({
-      Price: totalPrice,
+      Price: totalPriceDiscounted,
       Itemqty: [...products.map(item => item.quantity)],
       Quantity: products.reduce((sum, item) => sum + item.quantity, 0),
       customerId,
       //@ts-ignore
       productId: [ ...products.map(item => item.productId) ],
+      Tax: Tax,
+      Discount: Discount
     
     });
     console.log(products.map(item => item.quantity))
@@ -397,9 +406,11 @@ type salesOrder1 = {
   productId:string;
   uploader:string
   Itemqty:number[]
+  Discount:number
+  Tax:number
 }
 export async function uploadSales(data: salesOrder1) {
-  const {Price, Quantity, customerId,productId,Itemqty} = data;
+  const {Price, Quantity, customerId,productId,Itemqty, Tax, Discount} = data;
 
   try {
     // Upload land
@@ -414,6 +425,8 @@ export async function uploadSales(data: salesOrder1) {
         customer:customerId,
         product:productId,
         Itemqty: Itemqty,
+        Tax:Tax,
+        Discount:Discount,
       }
     );
 
@@ -454,7 +467,7 @@ export async function uploadPurchase(data: salesOrder1) {
 
 
 export async function uploadProduct(data: ProductFormValues) {
-  const { category, price, description, quantity, brand, userEmail, name,width, length } = data;
+  const { category, price, description, quantity, brand, userEmail, name,width, length,imageSrc} = data;
 
   try {
     // Upload land
@@ -472,7 +485,8 @@ export async function uploadProduct(data: ProductFormValues) {
         Price: price,
         Email: userEmail,
         Dimension_Length:length,
-        Dimension_Width:width
+        Dimension_Width:width,
+        ImageSrc:imageSrc
       
       }
     );
@@ -540,4 +554,28 @@ export async function createAccountUpdate(ID:string, secret:string, password:str
   } catch (error) {
     console.log(error)
   }   
+}
+//Register Land 
+export async function registerProduct(productimage: FormData) {
+  try {
+    const file = productimage.get('productimage') as File;
+
+    // Convert the file to a buffer
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { Storage } = await createAdminClient();
+    // Upload the file to Appwrite Storage
+    const response = await Storage.createFile(
+      NEXT_BUCKET_ID!, // Your Appwrite bucket ID
+      ID.unique(), // Generate a unique file ID
+      InputFile.fromBuffer(buffer, file.name) // Create InputFile from buffer
+    );
+
+    // Return the file URL
+    return {
+      url: `https://cloud.appwrite.io/v1/storage/buckets/${NEXT_BUCKET_ID}/files/${response.$id}/view?project=66cb7e28000134f29da2&mode=admin`,
+    };
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    return null;
+  }
 }

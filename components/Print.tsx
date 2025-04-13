@@ -25,6 +25,8 @@ interface Sale {
     Phone: string;
   };
   $createdAt: string;
+  Discount:number;
+  Tax:number;
 }
 
 interface SalesReceiptClientProps {
@@ -45,11 +47,11 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
     return sum + product.Price * quantity;
   }, 0);
 
-  const taxRate = 0.08; // 8% tax
+  const taxRate = sale?.Tax/100 // 8% tax
   const tax = subtotal * taxRate;
-  const discountRate = 0.01; // 1% discount
+  const discountRate = sale.Discount/100 // 1% discount
   const discount = subtotal * discountRate;
-  const total = subtotal + tax - discount;
+  const total = (subtotal + tax) - discount;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -129,13 +131,13 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
             
             {discount > 0 && (
               <div className="flex justify-between py-2 border-b">
-                <span className="font-semibold">Discount (1%):</span>
+                <span className="font-semibold">Discount ({sale.Discount} %):</span>
                 <span className="text-red-600">- GHC {discount.toFixed(2)}</span>
               </div>
             )}
             
             <div className="flex justify-between py-2 border-b">
-              <span className="font-semibold">Tax (8%):</span>
+              <span className="font-semibold">Tax ({sale.Tax}%):</span>
               <span>GHC {tax.toFixed(2)}</span>
             </div>
             

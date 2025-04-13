@@ -41,6 +41,8 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [customerSearch, setCustomerSearch] = useState('');
   const [productSearch, setProductSearch] = useState('');
+  //const [discount, setDiscount] = useState(0);
+  //const [taxRate, setTaxRate] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([]);
   const [currentProduct, setCurrentProduct] = useState<{
     productId: string;
@@ -58,10 +60,21 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     defaultValues: {
       customerId: '',
       products: [],
+      discount:0,
+      taxRate:0
     },
   });
 
   const customerId = watch('customerId');
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
+  //const discount = watch('discount');
+  //const taxRate = watch('taxRate');
   const selectedCustomer = customers.find(c => c.$id === customerId);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -76,6 +89,8 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     try {
       const saleData = {
         customerId: data.customerId,
+        Discount: parseFloat(data.discount),
+        Tax: parseFloat(data.taxRate),
         products: selectedProducts.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -172,11 +187,35 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
     ));
   };
 
-  const calculateTotal = () => {
+  const calculateTotal1 = () => {
     return selectedProducts.reduce(
       (sum, item) => sum + (item.price * item.quantity),
       0
     ).toFixed(2);
+  };
+  const calculateSubtotal = () => {
+    return selectedProducts.reduce(
+      (sum, item) => sum + (item.price * item.quantity),
+      0
+    );
+  };
+
+  const calculateTotal = () => {
+    const subtotal = selectedProducts.reduce(
+      (sum, item) => sum + (item.price * item.quantity),
+      0
+    );
+    
+    // Get current discount and taxRate from form values
+    const discountValue = watch('discount') || 0;
+    const taxRateValue = watch('taxRate') || 0;
+  
+    const taxAmount = subtotal * (taxRateValue / 100);
+    const new_total = taxAmount+subtotal
+    const discountedAmount = (new_total) - (new_total* (discountValue / 100));
+    
+    
+    return (discountedAmount).toFixed(2);
   };
 
   const bodyContent = (
@@ -218,7 +257,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                     {filteredCustomers.length > 0 ? (
                       filteredCustomers.map(customer => (
                         <CommandItem
-                          value={customer.Email}
+                          value={customer.Name + " " + customer.Email}
                           key={customer.Email}
                           onSelect={() => {
                             setValue('customerId', customer.$id, { shouldValidate: true });
@@ -291,7 +330,7 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                           {filteredProducts.length > 0 ? (
                             filteredProducts.map(product => (
                               <CommandItem
-                                value={product.$id}
+                                value={`${product.Brand} ${product.Name}`}
                                 key={product.$id}
                                 onSelect={() => {
                                   setCurrentProduct(prev => ({
@@ -400,6 +439,36 @@ const SalesModal = ({ customers, products }: SalesModalProps) => {
                   );
                 })}
               </div>
+
+              {/* Discount and Tax if applicable*/}
+
+              <div className="space-y-2">
+        <label className="text-sm font-medium">Tax (%)</label>
+        <Input
+          id='taxRate'
+          type="number"
+          {...register('taxRate', {
+            valueAsNumber: true,
+            min: 0,
+            max:100
+          })}
+          
+      
+        />
+      </div>
+              <div className="space-y-2">
+        <label className="text-sm font-medium">Discount (%)</label>
+        <Input
+          id='discount'
+          type="number"
+          {...register('discount', {
+            valueAsNumber: true,
+            min: 0,
+            max:100
+          })}
+        
+        />
+      </div>
               
               {/* Total Price */}
               <div className="flex justify-between items-center p-3 bg-muted rounded-md">

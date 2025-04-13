@@ -16,14 +16,16 @@ import Input from './Input';
 import Modal from './Modal';
 import { toast } from 'sonner';
 import { getLoggedInUser, uploadProduct } from '@/lib/Appwrite/api';
+import ImageUpload from '../ImageUpload';
 
 
 
 
 enum STEPS {
   CATEGORY = 0,
-  DESCRIPTION =1,
-  QUANTITY = 2,
+  IMAGES =1,
+  DESCRIPTION =2,
+  QUANTITY = 3,
 
 }
 
@@ -80,7 +82,8 @@ const ProductModal = () => {
       brand:'',
       width:1,
       length:1,
-      name:''
+      name:'',
+      imageSrc: [],
    
   
     },
@@ -88,6 +91,7 @@ const ProductModal = () => {
 
 
   const category = watch('category');
+  const imageSrc = watch('imageSrc');
 
  
 
@@ -175,7 +179,20 @@ const ProductModal = () => {
       </div>
     </div>
   );
-
+  if (step === STEPS.IMAGES) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <ModalHeader
+          title="Add a display image of your Product"
+          subtitle="Product Image upload"
+        />
+        <ImageUpload
+          value={imageSrc}
+          onChange={(value) => setCustomValue('imageSrc', value)}
+        />
+      </div>
+    );
+  }
 
 
   if (step === STEPS.DESCRIPTION) {
