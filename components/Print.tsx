@@ -25,15 +25,18 @@ interface Sale {
     Phone: string;
   };
   $createdAt: string;
-  Discount:number;
-  Tax:number;
+  Discount?: number;
+  Tax?: number;
 }
+
+type DocumentType = "invoice" | "salesReceipt";
 
 interface SalesReceiptClientProps {
   sale: Sale; // The sale data passed from the server component
+  type: DocumentType;
 }
 
-export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
+export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   
   // React to Print handler
@@ -47,16 +50,21 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
     return sum + product.Price * quantity;
   }, 0);
 
-  const taxRate = sale?.Tax/100 // 8% tax
+  const taxRate = (sale.Tax || 0) / 100;
   const tax = subtotal * taxRate;
-  const discountRate = sale.Discount/100 // 1% discount
+  const discountRate = (sale.Discount || 0) / 100;
   const discount = subtotal * discountRate;
   const total = (subtotal + tax) - discount;
 
+  const isInvoice = type === "invoice";
+  const documentTitle = isInvoice ? "INVOICE" : "SALES RECEIPT";
+  const idLabel = isInvoice ? "Invoice ID" : "Sales ID";
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
+     
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md" ref={contentRef}>
-        {/* Receipt Header */}
+        {/* Document Header */}
         <div className="text-center mb-8 justify-between flex flex-row gap-y-3 max-w-3xl mx-auto">
           <div>
             <p className="font-bold text-xl">PUREGREEN GALAXY ENGINEERING</p>
@@ -66,22 +74,23 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
             </p>
             <p className="text-start text-sm">Mobile No: 0540113443</p>
           </div>
-          <div>
+          <div className="flex flex-col items-end">
             <Image src={'/PuregreenLogo.jpg'} width={100} height={100} alt='logo'/>
+            <h1 className="text-sm font-bold mt-2">{documentTitle}</h1>
           </div>
         </div>
 
         {/* Customer Information */}
-        <div className="mb-8 p-4 bg-gray-100 rounded-lg text-sm flex flex-row max-w-2xl mx-auto justify-between">
+        <div className="mb-8 p-4 ring-1 ring-primary rounded-lg text-sm flex flex-row max-w-2xl mx-auto justify-between">
           <div>
             <p className="mt-1"><p className="font-bold">Name/Company</p> {sale.customer.Name}</p>
             <p className="mt-1"><p className="font-bold">Email</p> {sale.customer.Email}</p>
             <p className="mt-1"><p className="font-bold">Contact</p> {sale.customer.Phone}</p>
           </div>
           <div>
-            <p className="mt-1"><p className='font-bold'>Payment Date </p>{date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}  {'    '} {date.getHours()}:{date.getMinutes()}</p>
-            <p className="mt-1"><p className='font-bold'>Time </p>{date.getHours()}:{date.getMinutes()}</p>
-            <p className="mt-1"><p className="font-bold">Sales ID</p> {sale.$id}</p>
+            <p className="mt-1"><p className='font-bold'>Date </p>{date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}</p>
+            <p className="mt-1"><p className='font-bold'>Time </p>{date.getHours()}:{date.getMinutes().toString().padStart(2, '0')}</p>
+            <p className="mt-1"><p className="font-bold">{idLabel}</p> {sale.$id}</p>
           </div>
         </div>
 
@@ -129,17 +138,19 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
               <span>GHC {subtotal.toFixed(2)}</span>
             </div>
             
-            {discount > 0 && (
+            {!isInvoice && discount > 0 && (
               <div className="flex justify-between py-2 border-b">
-                <span className="font-semibold">Discount ({sale.Discount} %):</span>
+                <span className="font-semibold">Discount ({sale.Discount}%):</span>
                 <span className="text-red-600">- GHC {discount.toFixed(2)}</span>
               </div>
             )}
             
-            <div className="flex justify-between py-2 border-b">
-              <span className="font-semibold">Tax ({sale.Tax}%):</span>
-              <span>GHC {tax.toFixed(2)}</span>
-            </div>
+            {!isInvoice && tax > 0 && (
+              <div className="flex justify-between py-2 border-b">
+                <span className="font-semibold">Tax ({sale.Tax}%):</span>
+                <span>GHC {tax.toFixed(2)}</span>
+              </div>
+            )}
             
             <div className="flex justify-between py-2 font-bold text-lg">
               <span>Total:</span>
@@ -156,7 +167,7 @@ export default function SalesReceiptClient({ sale }: SalesReceiptClientProps) {
             className="mt-4 bg-primary text-white px-4 py-2 rounded-md hover:bg-green-700"
             onClick={() => reactToPrintFn()}
           >
-            Print Receipt
+            Print {isInvoice ? "Invoice" : "Receipt"}
           </button>
         </div>
       </div>

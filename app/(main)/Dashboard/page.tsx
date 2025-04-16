@@ -1,8 +1,9 @@
+import AddNewExpense from '@/components/AddNewExpense'
 import { CalendarDatePicker } from '@/components/CalendarDatePicker'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getLoggedInUser, getProductsYTD, getPurchaseYTD, getSalesYTD } from '@/lib/Appwrite/api'
+import { getExpensesYTD, getLoggedInUser, getProductsYTD, getPurchaseYTD, getSalesYTD } from '@/lib/Appwrite/api'
 import Link from 'next/link'
 import React from 'react'
 
@@ -37,6 +38,8 @@ const page = async (props: Props) => {
     return sum + (price * quantity)
   }, 0) || 0
   const restock = await getPurchaseYTD(firstDayOfYear)
+  const expenses = await getExpensesYTD(firstDayOfYear)
+  console.log(expenses)
 
   // Format the amounts as currency
   const formattedTotal = new Intl.NumberFormat('en-GH', {
@@ -49,14 +52,48 @@ const page = async (props: Props) => {
     currency: 'GHS'
   }).format(totalProductValue)
 
+
+  //Expenses
+  const calculateTotalExpenses = (expenses: any[]) => {
+    let totalElectricity = 0;
+    let totalWater = 0;
+    let totalInternet = 0;
+    let totalTax = 0;
+    let totalSalary = 0;
+  
+    expenses.forEach((item) => {
+      totalElectricity += Number(item.Electricity) || 0;
+      totalWater += Number(item.Water) || 0;
+      totalInternet += Number(item.Internet) || 0;
+      totalTax += Number(item.GRA_Tax) || 0;
+      totalSalary += Number(item.Salary) || 0;
+    });
+  
+    const grandTotal = totalElectricity + totalWater + totalInternet + totalTax + totalSalary;
+  
+    return {
+      totalElectricity,
+      totalWater,
+      totalInternet,
+      totalTax,
+      totalSalary,
+      grandTotal
+    };
+  };
+  
+  {/*@ts-ignore */}
+  const expenseTotals = expenses?.length > 0 ? calculateTotalExpenses(expenses) : null;
   return (
     <>
     
-      <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex-1 space-y-4 p-8 pt-6 mx-30">
      
      
-     
+          <div className=' flex justify-between'>
+
           <CalendarDatePicker />  
+          <CalendarDatePicker />  
+          </div>
 
           <div className="space-y-4">
          
@@ -126,8 +163,9 @@ const page = async (props: Props) => {
             {isAuthorized && (
   <Card>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">
-        Monthly Expenses
+      <CardTitle className="text-sm font-medium flex flex-row justify-between">
+ 
+        <AddNewExpense />
       </CardTitle>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -147,56 +185,65 @@ const page = async (props: Props) => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (GHS)</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Electricity</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Water</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Internet</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tax</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {/* Electricity */}
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Electricity</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">500</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
-            {/* Water */}
-            <tr className="bg-gray-50">
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Water</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">250</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
-            {/* Internet */}
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Internet</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">300</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
-            {/* GRA Tax */}
-            <tr className="bg-gray-50">
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">GRA Tax</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">1200</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
-            {/* Transport */}
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Transport</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">400</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
-            {/* Salary */}
-            <tr className="bg-gray-50">
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Salary</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">5000</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">June 2023</td>
-            </tr>
+
+            {/*@ts-ignore */}
+                {expenses.length > 0 ? expenses.map((item) => (
+                    <tr >
+                     
+                     <td className='flex text-center justify-center'>
+                {new Date(item.$createdAt).toLocaleDateString('en-GH', {
+               year: 'numeric',
+               month: 'short',
+              day: 'numeric'
+                 })}
+                  </td>
+                      <td className=' text-center justify-center'>{item.Electricity}</td>
+                      <td className='text-center justify-center'>{item.Water}</td>
+                      <td className=' text-center justify-center'>{item.Internet}</td>
+                      <td className=' text-center justify-center'>{item.GRA_Tax}</td>
+                      <td className='text-center justify-center'>{item.Salary}</td>
+                    </tr>
+
+
+                  ))
+                
+                
+                :<p>No expenses</p>}
+        
           </tbody>
-          <tfoot>
-            <tr className="bg-gray-100">
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900">Total</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900">7650</td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900"></td>
-            </tr>
-          </tfoot>
+         
+<tfoot>
+  <tr className="bg-gray-100">
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">Total</td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? (expenseTotals.totalElectricity) : '0'}
+    </td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? (expenseTotals.totalWater) : '0'}
+    </td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? (expenseTotals.totalInternet) : '0'}
+    </td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? (expenseTotals.totalTax) : '0'}
+    </td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? (expenseTotals.totalSalary) : '0'}
+    </td>
+    <td className="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 text-center justify-center">
+      {expenseTotals ? new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS' }).format(expenseTotals.grandTotal) : '0'}
+    </td>
+  </tr>
+</tfoot>
         </table>
       </div>
     </CardContent>

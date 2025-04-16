@@ -7,6 +7,7 @@ import { ID, Query } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
 import { SalesOrder } from "@/app/(main)/Sales/page";
 import {InputFile} from 'node-appwrite/file'
+import { Product } from "@/app/(main)/Product/Column";
 interface ProductFormValues {
   
   quantity: number; 
@@ -28,7 +29,7 @@ export type NewUser = {
 
 }
 // Authentication 
-const {NEXT_DATABASE_ID, NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
+const {NEXT_DATABASE_ID,NEXT_INVOICE_COLLECTION_ID,NEXT_EXPENSE_COLLECTION_ID, NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
 
 export async function createSUserAccount(user:NewUser){ 
 
@@ -176,6 +177,20 @@ export async function getPurchaseYTD(date){
       ])
       
     return SalesData.total
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getExpensesYTD(date){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_EXPENSE_COLLECTION_ID!,
+      [Query.greaterThan('$createdAt', date),  Query.limit(1000)
+      ])
+      
+    return SalesData.documents
   } catch (error) {
     console.log(error)
   }
@@ -438,6 +453,126 @@ export async function uploadSales(data: salesOrder1) {
     return { success: false, error: error?.message || "An error occurred while uploading the land." };
   }
 }
+export type Product1 = {
+  $id: string;
+  price: number;
+  Brand:string;
+  Name:string;
+  quantity:number;
+
+}
+
+type InvoiceOrder1 = {
+  Price:number;
+  Quantity:number;
+  customerId:string;
+  product:Product1[];
+  uploader:string
+  Itemqty:number[]
+
+}
+export async function uploadInvoices(data: InvoiceOrder1) {
+  const {Price, Quantity, customerId,product,Itemqty} = data;
+
+  try {
+    // Upload land
+    const totalPrice = product.reduce(
+      (sum, item) => sum + (item.price * item.quantity),
+      0
+    );
+    const { database } = await createAdminClient();
+    const customerupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_INVOICE_COLLECTION_ID!,
+      ID.unique(),
+     
+      {
+        Price: totalPrice,
+        Itemqty: [...product.map(item => item.quantity)],
+        Quantity: product.reduce((sum, item) => sum + item.quantity, 0),
+        customer:customerId,
+        //@ts-ignore
+        product: [ ...product.map(item => item.productId) ],
+      
+      
+    
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(customerupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
+type Expense1= {
+  Electricity:number;
+  Water:number;
+  Tax:number;
+  Transport:number;
+  Salary:number;
+  Internet:number
+}
+export async function uploadExpenses(data: Expense1) {
+  const {Electricity, Water, Tax, Transport, Salary, Internet,} = data;
+
+  try {
+ 
+    const { database } = await createAdminClient();
+    const customerupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_EXPENSE_COLLECTION_ID!,
+      ID.unique(),
+     
+      {
+        Electricity:Electricity,
+        Water: Water,
+        GRA_Tax:Tax,
+        Transport: Transport,
+        Salary:Salary,
+        Internet:Internet
+         
+    
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(customerupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
+export async function getInvoice(){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_INVOICE_COLLECTION_ID!,
+    [Query.limit(100), Query.orderDesc('$createdAt') ])
+      
+    return SalesData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+
+export async function getInvoicesId(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_INVOICE_COLLECTION_ID!,
+     id)
+      
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
 export async function uploadPurchase(data: salesOrder1) {
   const {Quantity,productId,uploader} = data;
 
