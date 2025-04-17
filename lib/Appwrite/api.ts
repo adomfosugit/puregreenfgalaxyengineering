@@ -139,7 +139,7 @@ export async function getSales(){
   }
 } 
 
-export async function getSalesYTD(date){
+export async function getSalesYTD1(date){
   try {
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
@@ -154,26 +154,50 @@ export async function getSalesYTD(date){
     console.log(error)
   }
 } 
+export async function getSalesYTD(startDate, endDate) {
+  try {
+    const { database } = await createAdminClient()
+
+    const SalesData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_SALES_COLLECTION_ID!,
+      [
+        Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),           
+        Query.select(['Price']),
+        Query.limit(1000),
+      ]
+    )
+
+    return SalesData.documents
+  } catch (error) {
+    console.error('Error fetching sales YTD:', error)
+    return []
+  }
+}
 export async function getProductsYTD(){
   try {
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_PRODUCT_COLLECTION_ID!,
-    [Query.select(['Price','Quantity']),  Query.limit(1000)])
+    [ 
+      Query.select(['Price','Quantity']),  Query.limit(1000)])
       
     return SalesData.documents
   } catch (error) {
     console.log(error)
   }
 } 
-export async function getPurchaseYTD(date){
+export async function getPurchaseYTD(startDate,endDate){
   try {
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_PURCHASE_COLLECTION_ID!,
-      [Query.greaterThan('$createdAt', date),  Query.limit(1000)
+      [ Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),  
+          Query.limit(10000)
       ])
       
     return SalesData.total
@@ -181,13 +205,15 @@ export async function getPurchaseYTD(date){
     console.log(error)
   }
 } 
-export async function getExpensesYTD(date){
+export async function getExpensesYTD(startDate, endDate){
   try {
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_EXPENSE_COLLECTION_ID!,
-      [Query.greaterThan('$createdAt', date),  Query.limit(1000)
+      [ Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate), 
+         Query.limit(1000)
       ])
       
     return SalesData.documents
