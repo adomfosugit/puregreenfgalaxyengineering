@@ -63,7 +63,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
      
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md" ref={contentRef}>
+      <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-md" ref={contentRef}>
         {/* Document Header */}
         <div className="text-center mb-8 justify-between flex flex-row gap-y-3 max-w-3xl mx-auto">
           <div>

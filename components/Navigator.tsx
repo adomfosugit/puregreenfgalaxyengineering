@@ -13,9 +13,6 @@ const Navigator = (props: Props) => {
       <NavigationMenuLink  href='/Dashboard' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Dashboard' ? 'bg-primary text-white' : ''}`}  >Dashboard</NavigationMenuLink>
     </NavigationMenuItem>
     <NavigationMenuItem>
-      <NavigationMenuLink  href='/Analytics' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Analytics' ? 'bg-primary text-white' : ''}`}  >Analytics</NavigationMenuLink>
-    </NavigationMenuItem>
-    <NavigationMenuItem>
       <NavigationMenuLink href='/Product' className={`${navigationMenuTriggerStyle()} font-light hover:bg-primary hover:text-white ${pathname === '/Product' ? 'bg-primary text-white' : ''}`}>Product</NavigationMenuLink>
     </NavigationMenuItem>
     <NavigationMenuItem>

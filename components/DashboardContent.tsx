@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 
 import {
@@ -16,6 +16,7 @@ import ExpenseCard from './ExpenseCard'
 import { DatePickerWithRange } from './CalendarDatePicker'
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 import { Bar, BarChart } from "recharts"
+import Overview from './Overview'
 
 
 const DashboardContent = ({ userEmail }: { userEmail: string }) => {
@@ -89,14 +90,17 @@ const chartConfig = {Price: {label: "Price",color: "green", },
         <DatePickerWithRange date={dateRange} setDate={setDateRange} />
       </div>
 
+
       <DashBoardCards
         formattedProductValue={formattedProductValue}
         formattedTotal={formattedTotal}
         restock={restocks}
         numberOfSales={sales.length}
       />
+     
       <div>
           {/*Add Analytics  Chart */}
+          <Overview chartData = {sales}/>
       </div>
 
       {isAuthorized && <ExpenseCard expenses={expenses} />}

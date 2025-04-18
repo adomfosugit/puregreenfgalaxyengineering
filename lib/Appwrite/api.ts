@@ -164,7 +164,7 @@ export async function getSalesYTD(startDate, endDate) {
       [
         Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),           
-        Query.select(['Price']),
+        Query.select(['Price','$createdAt']),
         Query.limit(1000),
       ]
     )
