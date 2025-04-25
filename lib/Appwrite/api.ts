@@ -177,19 +177,26 @@ export async function getSearchCustomers(searchterm:string){
     console.log(error)
   }
 } 
-export async function getSales(){
+export async function getSales(startDate, endDate) {
   try {
     const { database } = await createAdminClient()
+
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_SALES_COLLECTION_ID!,
-    [Query.limit(100), Query.orderDesc('$createdAt') ])
-      
+      [
+        Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),           
+         Query.limit(1000),
+      ]
+    )
+
     return SalesData.documents
   } catch (error) {
-    console.log(error)
+    console.error('Error fetching sales YTD:', error)
+    return []
   }
-} 
+}
 
 export async function getSalesYTD1(date){
   try {

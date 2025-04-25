@@ -2,10 +2,9 @@
 import AddNewSales from "@/components/ui/AddNewSales";
 import { columns } from "./Column";
 import { DataTable } from "./data-table"
-import { getCustomers, getSales } from "@/lib/Appwrite/api";
+import {  getSales } from "@/lib/Appwrite/api";
 import { Product } from "../Product/Column";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SalesTable } from "@/components/SalesTale";
 
 export type SalesOrder = {
   $id:string;
@@ -26,15 +25,15 @@ export type SalesOrder = {
 
 export default async function page() {
   
-  const data = await getSales()
-  
-  //console.log(data)
+  //const data = await getSales()
+
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
       <AddNewSales /> 
 
          {/* @ts-ignore */}
-         <DataTable columns={columns} data={data} />
+        {/* <DataTable columns={columns} data={data} /> */}
+        <SalesTable  columns= {columns}/>
 
     </div>
   )

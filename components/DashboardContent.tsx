@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import {  useEffect, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 
 import {
@@ -15,7 +15,6 @@ import DashBoardCards from './DashBoardCards'
 import ExpenseCard from './ExpenseCard'
 import { DatePickerWithRange } from './CalendarDatePicker'
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-import { Bar, BarChart } from "recharts"
 import Overview from './Overview'
 
 
