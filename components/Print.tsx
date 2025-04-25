@@ -27,6 +27,7 @@ interface Sale {
   $createdAt: string;
   Discount?: number;
   Tax?: number;
+  currentPrice:number[]
 }
 
 type DocumentType = "invoice" | "salesReceipt";
@@ -47,7 +48,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
   // Calculate order totals
   const subtotal = sale.product.reduce((sum, product, index) => {
     const quantity = sale.Itemqty[index] || sale.Quantity;
-    return sum + product.Price * quantity;
+    return sum + sale.currentPrice[index] * quantity;
   }, 0);
 
   const taxRate = (sale.Tax || 0) / 100;
@@ -63,7 +64,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
      
-      <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-md" ref={contentRef}>
+      <div className="max-w-4xl bg-white/90 mx-auto p-8 rounded-lg shadow-md" ref={contentRef}>
         {/* Document Header */}
         <div className="text-center mb-8 justify-between flex flex-row gap-y-3 max-w-3xl mx-auto">
           <div>
@@ -116,7 +117,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
                         {product.Brand || 'No brand specified'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">GHC {product.Price.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">GHC {sale.currentPrice[index]}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {sale.Itemqty[index] || sale.Quantity}
                     </td>

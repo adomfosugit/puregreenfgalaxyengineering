@@ -112,6 +112,32 @@ export async function getProducts(){
     console.log(error)
   }
 } 
+export async function getSearchProducts(searchterm:string){
+  try {
+    const { database } = await createAdminClient()
+    const CustomerData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+      [Query.contains('Name', searchterm )  ])
+      
+    return CustomerData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getinitialProducts(){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+    [Query.limit(2)])
+      
+    return ProductData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function getCustomers(){
   try {
     const { database } = await createAdminClient()
@@ -119,6 +145,32 @@ export async function getCustomers(){
       NEXT_DATABASE_ID!,
       NEXT_CUSTOMER_COLLECTION_ID!,
       [Query.limit(100), Query.orderDesc('$createdAt') ])
+      
+    return CustomerData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getinitialCustomers(){
+  try {
+    const { database } = await createAdminClient()
+    const CustomerData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_CUSTOMER_COLLECTION_ID!,
+      [Query.limit(4), Query.orderDesc('$createdAt') ])
+      
+    return CustomerData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getSearchCustomers(searchterm:string){
+  try {
+    const { database } = await createAdminClient()
+    const CustomerData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_CUSTOMER_COLLECTION_ID!,
+      [Query.contains('Name', searchterm )  ])
       
     return CustomerData.documents
   } catch (error) {
@@ -312,6 +364,7 @@ export async function createSalesAndUpdateProduct1(data: {
     const salesResult = await uploadSales({
       Price: totalPriceDiscounted,
       Itemqty: [...products.map(item => item.quantity)],
+      currentPrice:[...products.map(item => item.price)],
       Quantity: products.reduce((sum, item) => sum + item.quantity, 0),
       customerId,
       //@ts-ignore
@@ -320,7 +373,7 @@ export async function createSalesAndUpdateProduct1(data: {
       Discount: Discount
     
     });
-    console.log(products.map(item => item.quantity))
+    console.log(products.map(item => item.price))
     if (!salesResult?.success) {
       return { 
         success: false, 
@@ -449,9 +502,10 @@ type salesOrder1 = {
   Itemqty:number[]
   Discount:number
   Tax:number
+  currentPrice:number[]
 }
 export async function uploadSales(data: salesOrder1) {
-  const {Price, Quantity, customerId,productId,Itemqty, Tax, Discount} = data;
+  const {Price, Quantity, customerId,productId,Itemqty, Tax, Discount,currentPrice} = data;
 
   try {
     // Upload land
@@ -464,6 +518,7 @@ export async function uploadSales(data: salesOrder1) {
         Price:Price,
         Quantity:Quantity,
         customer:customerId,
+        currentPrice:currentPrice,
         product:productId,
         Itemqty: Itemqty,
         Tax:Tax,
@@ -515,6 +570,7 @@ export async function uploadInvoices(data: InvoiceOrder1) {
       {
         Price: totalPrice,
         Itemqty: [...product.map(item => item.quantity)],
+        currentPrice:[...product.map(item => item.price)],
         Quantity: product.reduce((sum, item) => sum + item.quantity, 0),
         customer:customerId,
         //@ts-ignore

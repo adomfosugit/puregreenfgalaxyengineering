@@ -14,6 +14,7 @@ import { Product } from "./Product/Column";
 import InvoiceModal from "@/components/Modal/InvoiceModal";
 import ExpenseModal from "@/components/Modal/ExpenseModal";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -51,9 +52,10 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         <Toaster position="top-center"/>
         <ProductModal />
         {/*@ts-ignore*/}
-       <SalesModal  customers={customers} products ={products}/>
+      <SalesModal /> 
+       
          {/*@ts-ignore*/}
-       <InvoiceModal  customers={customers} products ={products}/>
+       <InvoiceModal  />
         <CustomerModal />
         {/* @ts-ignore */}
         <PurchaseModal products={products}  />
