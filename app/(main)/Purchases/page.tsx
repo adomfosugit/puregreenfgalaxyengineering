@@ -21,15 +21,15 @@ export type PurchaseOrder = {
 
 export default async function page() {
   //@ts-ignore
-  const data:PurchaseOrder[] = await getPurchases()
-  console.log(data)
+  //const data:PurchaseOrder[] = await getPurchases()
+  //console.log(data)
 
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
       <AddNewPurchase /> 
      
 
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} />
     </div>
   )
 }

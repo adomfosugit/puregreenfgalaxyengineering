@@ -7,7 +7,7 @@ import { getProducts } from "@/lib/Appwrite/api"
 export default async function page() {
   //@ts-ignore
   const data:Product[] = await getProducts() 
-  //console.log(data)
+ // console.log(data)
 
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">

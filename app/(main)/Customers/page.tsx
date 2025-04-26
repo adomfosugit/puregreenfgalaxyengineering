@@ -17,7 +17,7 @@ export type Customer = {
 
 export default async function page() {
   //@ts-ignore
-  const data: Customer = await getCustomers()
+ // const data: Customer = await getCustomers()
   //console.log(data)
 
   return (
@@ -25,7 +25,7 @@ export default async function page() {
       <AddNewCustomer /> 
      
     {/* @ts-ignore */}
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns}  />
     </div>
   )
 }

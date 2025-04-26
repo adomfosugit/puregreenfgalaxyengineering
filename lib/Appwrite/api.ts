@@ -112,6 +112,37 @@ export async function getProducts(){
     console.log(error)
   }
 } 
+export async function getProductbyID(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+      id
+    )
+      
+    return ProductData
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function updateProductByID(id: string, data: any) {
+  try {
+    const { database } = await createAdminClient();
+    
+    const updatedProduct = await database.updateDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+      id,
+      data
+    );
+
+    return updatedProduct;
+  } catch (error) {
+    console.log(error);
+    throw error; // rethrow if you want to handle it in the page
+  }
+}
 export async function getSearchProducts(searchterm:string){
   try {
     const { database } = await createAdminClient()
@@ -138,13 +169,18 @@ export async function getinitialProducts(){
     console.log(error)
   }
 } 
-export async function getCustomers(){
+export async function getCustomers(startDate, endDate){
   try {
     const { database } = await createAdminClient()
     const CustomerData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_CUSTOMER_COLLECTION_ID!,
-      [Query.limit(100), Query.orderDesc('$createdAt') ])
+      [ 
+        Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),           
+        Query.limit(1000),
+      ]  
+    )
       
     return CustomerData.documents
   } catch (error) {
@@ -280,14 +316,16 @@ export async function getExpensesYTD(startDate, endDate){
     console.log(error)
   }
 } 
-export async function getPurchases(){
+export async function getPurchases(startDate,endDate){
   try {
     const { database } = await createAdminClient()
     const PurchaseData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_PURCHASE_COLLECTION_ID!,
-    [Query.limit(100), Query.orderAsc('$createdAt') 
-    ])
+      [ Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),  
+          Query.limit(10000)
+      ])
       
     return PurchaseData.documents
   } catch (error) {
@@ -635,13 +673,16 @@ export async function uploadExpenses(data: Expense1) {
     return { success: false, error: error?.message || "An error occurred while uploading the land." };
   }
 }
-export async function getInvoice(){
+export async function getInvoice(startDate, endDate){
   try {
     const { database } = await createAdminClient()
     const SalesData = await database.listDocuments(
       NEXT_DATABASE_ID!,
       NEXT_INVOICE_COLLECTION_ID!,
-    [Query.limit(100), Query.orderDesc('$createdAt') ])
+      [ Query.greaterThanEqual('$createdAt', startDate), 
+        Query.lessThanEqual('$createdAt', endDate),  
+          Query.limit(10000)
+      ])
       
     return SalesData.documents
   } catch (error) {

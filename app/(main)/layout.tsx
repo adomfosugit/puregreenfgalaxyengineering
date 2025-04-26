@@ -36,8 +36,7 @@ export default async function RootLayout({children}: Readonly<{children: React.R
  
   const getUser = await getLoggedInUser()
 
-  //@ts-ignore
-  const customers:Customer[] = await getCustomers()
+
   //@ts-ignore
   const products:Product[] = await getProducts()
   if(!getUser){

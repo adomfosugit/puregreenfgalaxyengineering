@@ -20,22 +20,30 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState } from 'react'
+import { DateRange } from 'react-day-picker'
+import { getCustomers, getSales } from '@/lib/Appwrite/api'
 import { Input } from "@/components/ui/input"
+import { DatePickerWithRange } from "@/components/CalendarDatePicker"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[]
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData>({
+    columns }: DataTableProps<TData>) {
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date(),
+  })
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] =useState<ColumnFiltersState>(
         []
       )
+      const [data, setData] = useState<TData[]>([])
+      const [isLoading, setIsLoading] = useState(false)
     const table = useReactTable({
         data,
         columns,
@@ -50,9 +58,35 @@ export function DataTable<TData, TValue>({
             columnFilters,
         },
     })
-
+    useEffect(() => {
+      const fetchData = async () => {
+        const startDate = dateRange?.from
+        const endDate = dateRange?.to
+  
+        if (!startDate || !endDate) return
+  
+        setIsLoading(true)
+        try {
+          const customersData = await getCustomers(startDate, endDate)
+          {/* @ts-ignore */}
+          setData(customersData)
+        } catch (error) {
+          console.error("Failed to fetch sales data:", error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+  
+      fetchData()
+    }, [dateRange])
   return (
     <div className="rounded-md border">
+        <div className="flex justify-between items-center">
+        <DatePickerWithRange 
+          date={dateRange} 
+          setDate={setDateRange} 
+        />
+      </div>
      <div className="flex items-center py-4 px-2">
         <Input
           placeholder="Filter Customers by Name..."
@@ -99,7 +133,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              {isLoading ? "Loading..." : "No results."}
               </TableCell>
             </TableRow>
           )}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { DateRange } from 'react-day-picker'
-import { getSales, getSalesYTD } from '@/lib/Appwrite/api'
+import { getSales } from '@/lib/Appwrite/api'
 import { DatePickerWithRange } from './CalendarDatePicker'
 import {
   ColumnDef,
@@ -53,6 +53,7 @@ export function SalesTable<TData>({
       setIsLoading(true)
       try {
         const salesData = await getSales(startDate, endDate)
+        {/* @ts-ignore */}
         setData(salesData)
       } catch (error) {
         console.error("Failed to fetch sales data:", error)
