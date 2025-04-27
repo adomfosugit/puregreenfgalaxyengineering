@@ -7,6 +7,7 @@ import { SalesOrder } from "./page"
 
 
 import Link from "next/link"
+import { DeleteModal } from "@/components/DeleteModal"
 
 export const columns: ColumnDef<SalesOrder>[] = [
   { 
@@ -82,6 +83,13 @@ export const columns: ColumnDef<SalesOrder>[] = [
           </Button>
         )}
   
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+
+      <DeleteModal  id = {row.original.$id} type='invoice'/>
+    ),
   }
 
 ]

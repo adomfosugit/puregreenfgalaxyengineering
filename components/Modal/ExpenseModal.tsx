@@ -33,6 +33,8 @@ const ExpenseModal = () => {
       Water:'',
       Internet:'',
       Transport:'',
+      Other:'',
+      Comment:''
      
    
   
@@ -63,14 +65,16 @@ const ExpenseModal = () => {
         Tax:parseFloat(data.Tax),
         Transport: parseFloat(data.Transport),
         Salary:parseFloat(data.Salary),
-        Internet:parseFloat(data.Internet)}
+        Internet:parseFloat(data.Internet),
+        Other:parseFloat(data.Other),
+        Comment:data.Comment},
       );
   
       // Check if the upload was successful
       if (upload.success) {
         toast(`Expenses Successfully uploaded`);
         reset(); // Reset the form
-        router.refresh();
+        router.push('/Dashboard');
     
        
       } else {
@@ -101,7 +105,7 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+    
           
         />
          <Input
@@ -110,7 +114,7 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+        
         />
        <Input
           id="Tax"
@@ -118,7 +122,7 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+          
         />
        <Input
           id="Salary"
@@ -126,7 +130,7 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+    
         />
        <Input
           id="Transport"
@@ -134,7 +138,7 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+      
         />
        <Input
           id="Internet"
@@ -142,7 +146,23 @@ const ExpenseModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
+          
+        />
+       <Input
+          id="Other"
+          label="Other"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+        
+        />
+       <Input
+          id="Comment"
+          label="Comment"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+        
         />
       </div>
     </div>

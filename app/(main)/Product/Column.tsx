@@ -1,12 +1,11 @@
 "use client"
 
+import { DeleteModal } from "@/components/DeleteModal"
 import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import Link from "next/link"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Product = {
   $id: string;
   Price: number;
@@ -71,6 +70,13 @@ export const columns: ColumnDef<Product>[] = [
           </Button>
         )}
   
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+
+      <DeleteModal  id = {row.original.$id} type='product'/>
+    ),
   }
 
 ]

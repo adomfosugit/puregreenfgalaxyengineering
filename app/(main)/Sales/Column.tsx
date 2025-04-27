@@ -2,11 +2,16 @@
 
 import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Delete, DeleteIcon } from "lucide-react"
 import { SalesOrder } from "./page"
 
 
 import Link from "next/link"
+import { deleteSales } from "@/lib/Appwrite/api"
+
+import { toast } from "sonner"
+import { DeleteModal } from "@/components/DeleteModal"
+
 
 export const columns: ColumnDef<SalesOrder>[] = [
   { 
@@ -82,6 +87,13 @@ export const columns: ColumnDef<SalesOrder>[] = [
           </Button>
         )}
   
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+
+      <DeleteModal  id = {row.original.$id} type='sale'/>
+    ),
   }
 
 ]

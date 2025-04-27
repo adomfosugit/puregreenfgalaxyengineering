@@ -15,6 +15,8 @@ type Expense = {
   Salary: number;
   Transport: number;
   Internet: number;
+  Other:number;
+  Comment: string;
   $createdAt: string;
 };
 
@@ -28,6 +30,7 @@ const calculateTotalExpenses = (expenses: Expense[]) => {
   let totalInternet = 0;
   let totalTax = 0;
   let totalSalary = 0;
+  let totalOther = 0;
 
   expenses.forEach((item) => {
     totalElectricity += Number(item.Electricity) || 0;
@@ -35,10 +38,11 @@ const calculateTotalExpenses = (expenses: Expense[]) => {
     totalInternet += Number(item.Internet) || 0;
     totalTax += Number(item.GRA_Tax) || 0;
     totalSalary += Number(item.Salary) || 0;
+    totalOther += Number(item.Other) || 0;
   });
 
   const grandTotal =
-    totalElectricity + totalWater + totalInternet + totalTax + totalSalary;
+    totalElectricity + totalWater + totalInternet + totalTax + totalSalary+totalOther;
 
   return {
     totalElectricity,
@@ -46,6 +50,7 @@ const calculateTotalExpenses = (expenses: Expense[]) => {
     totalInternet,
     totalTax,
     totalSalary,
+    totalOther,
     grandTotal,
   };
 };
@@ -95,6 +100,12 @@ const ExpenseCard = ({ expenses }: Props) => {
                 <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Salary
                 </th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Other
+                </th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Comment
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -113,6 +124,8 @@ const ExpenseCard = ({ expenses }: Props) => {
                     <td className="text-center">{item.Internet}</td>
                     <td className="text-center">{item.GRA_Tax}</td>
                     <td className="text-center">{item.Salary}</td>
+                    <td className="text-center">{item.Other}</td>
+                    <td className="text-center">{item.Comment}</td>
                   </tr>
                 ))
               ) : (
@@ -142,6 +155,9 @@ const ExpenseCard = ({ expenses }: Props) => {
                 </td>
                 <td className="px-4 py-2 text-sm font-bold text-center">
                   {expenseTotals.totalSalary}
+                </td>
+                <td className="px-4 py-2 text-sm font-bold text-center">
+                  {expenseTotals.totalOther}
                 </td>
               </tr>
               <tr>

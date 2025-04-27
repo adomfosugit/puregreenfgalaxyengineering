@@ -14,6 +14,7 @@ export type PurchaseOrder = {
   Date:string;
   product: Product[]
   $createdAt: Date
+  $id:string
 };
 
 

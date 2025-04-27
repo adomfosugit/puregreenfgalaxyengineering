@@ -5,9 +5,7 @@ import { parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { ID, Query } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
-import { SalesOrder } from "@/app/(main)/Sales/page";
 import {InputFile} from 'node-appwrite/file'
-import { Product } from "@/app/(main)/Product/Column";
 interface ProductFormValues {
   
   quantity: number; 
@@ -112,6 +110,19 @@ export async function getProducts(){
     console.log(error)
   }
 } 
+export async function deleteProduct(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.deleteDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PRODUCT_COLLECTION_ID!,
+     id)
+      
+    return ProductData
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function getProductbyID(id:string){
   try {
     const { database } = await createAdminClient()
@@ -179,6 +190,7 @@ export async function getCustomers(startDate, endDate){
         Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),           
         Query.limit(1000),
+        Query.orderDesc('$createdAt'),
       ]  
     )
       
@@ -222,7 +234,8 @@ export async function getSales(startDate, endDate) {
       NEXT_SALES_COLLECTION_ID!,
       [
         Query.greaterThanEqual('$createdAt', startDate), 
-        Query.lessThanEqual('$createdAt', endDate),           
+        Query.lessThanEqual('$createdAt', endDate),
+        Query.orderDesc('$createdAt'),           
          Query.limit(1000),
       ]
     )
@@ -260,11 +273,28 @@ export async function getSalesYTD(startDate, endDate) {
         Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),           
         Query.select(['Price','$createdAt']),
+        Query.orderDesc('$createdAt'),
         Query.limit(1000),
       ]
     )
 
     return SalesData.documents
+  } catch (error) {
+    console.error('Error fetching sales YTD:', error)
+    return []
+  }
+}
+export async function deleteSales(id:string) {
+  try {
+    const { database } = await createAdminClient()
+
+    const SalesData = await database.deleteDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_SALES_COLLECTION_ID!,
+     id
+    )
+
+    return SalesData
   } catch (error) {
     console.error('Error fetching sales YTD:', error)
     return []
@@ -292,7 +322,8 @@ export async function getPurchaseYTD(startDate,endDate){
       NEXT_PURCHASE_COLLECTION_ID!,
       [ Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),  
-          Query.limit(10000)
+          Query.limit(100),
+          Query.orderDesc('$createdAt'),
       ])
       
     return SalesData.total
@@ -308,10 +339,23 @@ export async function getExpensesYTD(startDate, endDate){
       NEXT_EXPENSE_COLLECTION_ID!,
       [ Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate), 
-         Query.limit(1000)
+         Query.limit(100)
       ])
       
     return SalesData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function deleteExpense(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.deleteDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_EXPENSE_COLLECTION_ID!,
+      id)
+      
+    return SalesData
   } catch (error) {
     console.log(error)
   }
@@ -324,10 +368,24 @@ export async function getPurchases(startDate,endDate){
       NEXT_PURCHASE_COLLECTION_ID!,
       [ Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),  
-          Query.limit(10000)
+        Query.orderDesc('$createdAt'),
+          Query.limit(100)
       ])
       
     return PurchaseData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function deletePurchases(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const PurchaseData = await database.deleteDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_PURCHASE_COLLECTION_ID!,
+     id)
+      
+    return PurchaseData
   } catch (error) {
     console.log(error)
   }
@@ -643,7 +701,7 @@ type Expense1= {
   Internet:number
 }
 export async function uploadExpenses(data: Expense1) {
-  const {Electricity, Water, Tax, Transport, Salary, Internet,} = data;
+  const {Electricity, Water, Tax, Transport, Salary, Internet,Comment, Other} = data;
 
   try {
  
@@ -659,7 +717,10 @@ export async function uploadExpenses(data: Expense1) {
         GRA_Tax:Tax,
         Transport: Transport,
         Salary:Salary,
-        Internet:Internet
+        Internet:Internet,
+        Comment:Comment,
+        Other:Other
+
          
     
       }
@@ -681,10 +742,24 @@ export async function getInvoice(startDate, endDate){
       NEXT_INVOICE_COLLECTION_ID!,
       [ Query.greaterThanEqual('$createdAt', startDate), 
         Query.lessThanEqual('$createdAt', endDate),  
-          Query.limit(10000)
+          Query.limit(100),
+          Query.orderDesc('$createdAt'),
       ])
       
     return SalesData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function deleteInvoice(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const SalesData = await database.deleteDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_INVOICE_COLLECTION_ID!,
+     id)
+      
+    return SalesData
   } catch (error) {
     console.log(error)
   }
