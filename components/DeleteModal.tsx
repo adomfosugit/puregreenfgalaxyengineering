@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 import { deleteExpense, deleteInvoice, deleteProduct, deletePurchases, deleteSales } from "@/lib/Appwrite/api";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 
 
@@ -33,6 +33,7 @@ interface DeleteModalProps {
 
 export function DeleteModal({ id, type }: DeleteModalProps) {
   const router = useRouter()
+  const pathname = usePathname()
 
   const handleDelete = async () => {
     const deleteFunction = deleteActions[type] // Get the correct delete function based on type
@@ -46,9 +47,7 @@ export function DeleteModal({ id, type }: DeleteModalProps) {
     try {
       await deleteFunction(id)  // Call the delete function
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully! ✅`)
-      
-      // Force refresh the current page after deletion
-      router.push(window.location.pathname)
+      router.push(pathname)
     } catch (error) {
       console.error(`Failed to delete ${type}:`, error)
       toast.error(`Failed to delete ${type} ❌`)

@@ -8,7 +8,7 @@ import ModalHeader from './ModalHeader';
 import Input from './Input';
 import Modal from './Modal';
 import { toast } from 'sonner';
-import { getLoggedInUser, uploadExpenses, uploadProduct } from '@/lib/Appwrite/api';
+import {  uploadExpenses } from '@/lib/Appwrite/api';
 import useExpenseModal from '@/hooks/useExpenseModal';
 
 const ExpenseModal = () => {
@@ -73,8 +73,8 @@ const ExpenseModal = () => {
       // Check if the upload was successful
       if (upload.success) {
         toast(`Expenses Successfully uploaded`);
-        reset(); // Reset the form
         router.push('/Dashboard');
+        reset(); // Reset the form
     
        
       } else {

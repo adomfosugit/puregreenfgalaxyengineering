@@ -25,15 +25,12 @@ export type SalesOrder = {
 
 export default async function page() {
   
-  const data = await getInvoice()
-  
-  //console.log(data)
   return (
     <div className="container mx-auto py-10 flex flex-col gap-y-2">
       <AddNewInvoice /> 
 
          {/* @ts-ignore */}
-         <DataTable columns={columns} data={data} />
+         <DataTable columns={columns} />
 
     </div>
   )
