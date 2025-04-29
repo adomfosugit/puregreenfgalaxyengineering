@@ -698,7 +698,9 @@ type Expense1= {
   Tax:number;
   Transport:number;
   Salary:number;
-  Internet:number
+  Internet:number;
+  Other:number;
+  Comment:string;
 }
 export async function uploadExpenses(data: Expense1) {
   const {Electricity, Water, Tax, Transport, Salary, Internet,Comment, Other} = data;

@@ -223,7 +223,7 @@ const SalesModal = () => {
         setSelectedProducts([]);
         setCurrentProduct({ productId: '', quantity: 1, productData: null });
         salesModal.onClose();
-        router.refresh();
+        router.push('Sales');
       } else {
         toast.error(`Upload Unsuccessful: ${upload.error}`);
       }

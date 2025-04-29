@@ -214,7 +214,7 @@ const InvoiceModal = () => {
         reset();
         setSelectedProducts([]);
         salesModal.onClose();
-        router.refresh();
+        router.push('Invoice');
       } else {
         toast.error(`Upload Unsuccessful: ${upload.error}`);
       }
