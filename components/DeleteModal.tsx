@@ -34,6 +34,7 @@ interface DeleteModalProps {
 export function DeleteModal({ id, type }: DeleteModalProps) {
   const router = useRouter()
   const pathname = usePathname()
+  console.log(pathname)
 
   const handleDelete = async () => {
     const deleteFunction = deleteActions[type] // Get the correct delete function based on type

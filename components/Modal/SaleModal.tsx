@@ -219,11 +219,12 @@ const SalesModal = () => {
       
       if (upload.success) {
         toast.success('Sale recorded successfully');
+        router.push('/Sales')
         reset();
         setSelectedProducts([]);
         setCurrentProduct({ productId: '', quantity: 1, productData: null });
         salesModal.onClose();
-        router.push('Sales');
+        
       } else {
         toast.error(`Upload Unsuccessful: ${upload.error}`);
       }

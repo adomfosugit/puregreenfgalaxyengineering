@@ -71,7 +71,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
         toast.success(`Stock Recorded `);
         reset();
         salesModal.onClose();
-        router.refresh();
+        router.push('/Purchases');
       }else {
         // Handle upload failure
         toast(`Upload Unsuccessful: ${upload.error}`);

@@ -506,6 +506,7 @@ export async function createSalesAndUpdateProduct1(data: {
         sales: salesResult.data,
         products: parseStringify(updatedProducts)
       } 
+    
     };
   } catch (error) {
     console.log(error);
