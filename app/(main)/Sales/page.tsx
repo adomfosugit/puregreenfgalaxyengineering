@@ -5,6 +5,7 @@ import { DataTable } from "./data-table"
 import {  getSales } from "@/lib/Appwrite/api";
 import { Product } from "../Product/Column";
 import { SalesTable } from "@/components/SalesTale";
+import SalesModal from "@/components/Modal/SaleModal";
 
 export type SalesOrder = {
   $id:string;

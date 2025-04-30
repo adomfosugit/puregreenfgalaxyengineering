@@ -40,7 +40,7 @@ const CustomerModal = () => {
       toast.success('Customer created successfully');
       reset();
       productModal.onClose();
-      router.push('/Customers');
+      window.location.href = '/Customers';
     } catch (error) {
       toast.error('Failed to create customer');
     } finally {

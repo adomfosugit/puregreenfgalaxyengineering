@@ -71,7 +71,7 @@ const PurchaseModal = ({ products }: SalesModalProps) => {
         toast.success(`Stock Recorded `);
         reset();
         salesModal.onClose();
-        router.push('/Purchases');
+        window.location.href = '/Purchases';
       }else {
         // Handle upload failure
         toast(`Upload Unsuccessful: ${upload.error}`);

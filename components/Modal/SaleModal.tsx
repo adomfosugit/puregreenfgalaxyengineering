@@ -5,7 +5,7 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react';
 import Modal from './Modal';
-import useSalesModal from '@/hooks/useSalesModal';
+
 import ModalHeader from './ModalHeader';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
@@ -15,6 +15,7 @@ import { Product } from '@/app/(main)/Product/Column';
 import { createSalesAndUpdateProduct1, getinitialCustomers, getinitialProducts, getSearchCustomers, getSearchProducts } from '@/lib/Appwrite/api';
 import { Input } from '../ui/input';
 import { useDebouncedCallback } from 'use-debounce';
+import useSalesModal from '@/hooks/useSalesModal';
 
 type Customer = {
   Name: string;
@@ -219,10 +220,14 @@ const SalesModal = () => {
       
       if (upload.success) {
         toast.success('Sale recorded successfully');
-        router.push('/Sales')
+        //router.push('/Sales')
+        //router.refresh();
+        window.location.href = '/Sales';
         reset();
         setSelectedProducts([]);
         setCurrentProduct({ productId: '', quantity: 1, productData: null });
+      
+      
         salesModal.onClose();
         
       } else {

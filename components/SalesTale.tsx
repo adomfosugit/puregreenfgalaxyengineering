@@ -25,6 +25,9 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { salesStore } from '@/hooks/useSalesModal'
+import { useRouter } from 'next/navigation'
+import SalesModal from './Modal/SaleModal'
 
 interface SalesTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -42,7 +45,7 @@ export function SalesTable<TData>({
   const [isLoading, setIsLoading] = useState(false)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const startDate = dateRange?.from
@@ -64,6 +67,9 @@ export function SalesTable<TData>({
 
     fetchData()
   }, [dateRange])
+
+
+
 
   const table = useReactTable({
     data,
@@ -88,7 +94,7 @@ export function SalesTable<TData>({
           setDate={setDateRange} 
         />
       </div>
-
+     
       <div className="rounded-md border">
         <div className="flex items-center py-4 px-2">
           <Input

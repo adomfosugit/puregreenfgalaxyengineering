@@ -73,7 +73,7 @@ const ExpenseModal = () => {
       // Check if the upload was successful
       if (upload.success) {
         toast(`Expenses Successfully uploaded`);
-        router.push('/Dashboard');
+        window.location.href = '/Dashboard';
         reset(); // Reset the form
     
        

@@ -48,7 +48,7 @@ export function DeleteModal({ id, type }: DeleteModalProps) {
     try {
       await deleteFunction(id)  // Call the delete function
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully! ✅`)
-      router.push(pathname)
+      window.location.href = pathname;
     } catch (error) {
       console.error(`Failed to delete ${type}:`, error)
       toast.error(`Failed to delete ${type} ❌`)

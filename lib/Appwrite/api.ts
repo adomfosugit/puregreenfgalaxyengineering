@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { ID, Query } from 'node-appwrite';
 import { createAdminClient, createSessionClient } from "./Config";
 import {InputFile} from 'node-appwrite/file'
+import { redirect } from "next/navigation";
 interface ProductFormValues {
   
   quantity: number; 
@@ -506,7 +507,6 @@ export async function createSalesAndUpdateProduct1(data: {
         sales: salesResult.data,
         products: parseStringify(updatedProducts)
       } 
-    
     };
   } catch (error) {
     console.log(error);
@@ -565,7 +565,6 @@ export async function createPurchaseAndUpdateProduct(data: salesOrder1) {
     //@ts-ignore
     return { 
       success: false, 
-
       //@ts-ignore
       error: error?.message || "An error occurred while processing the sale." 
     };
