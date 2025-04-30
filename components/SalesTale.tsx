@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { salesStore } from '@/hooks/useSalesModal'
 import { useRouter } from 'next/navigation'
 import SalesModal from './Modal/SaleModal'
+
 
 interface SalesTableProps<TData> {
   columns: ColumnDef<TData>[]

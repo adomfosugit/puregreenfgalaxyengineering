@@ -37,10 +37,13 @@ const UserSignIn = (props: Props) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
     const session = await signInAccount(values.Email,values.Password)
+    setIsLoading(false)
     if(!session.success){
     return toast(`${session.error}`)
+    
     }
     router.push('/Dashboard')
+    
     
   }
   return (

@@ -5,7 +5,6 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Check, ChevronsUpDown, Plus, X } from 'lucide-react';
 import Modal from './Modal';
-
 import ModalHeader from './ModalHeader';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
@@ -16,6 +15,7 @@ import { createSalesAndUpdateProduct1, getinitialCustomers, getinitialProducts, 
 import { Input } from '../ui/input';
 import { useDebouncedCallback } from 'use-debounce';
 import useSalesModal from '@/hooks/useSalesModal';
+
 
 type Customer = {
   Name: string;
@@ -222,7 +222,8 @@ const SalesModal = () => {
         toast.success('Sale recorded successfully');
         //router.push('/Sales')
         //router.refresh();
-        window.location.href = '/Sales';
+        //window.location.href = '/Sales';
+        useSalesStore.getState().setNeedsRefresh(true);
         reset();
         setSelectedProducts([]);
         setCurrentProduct({ productId: '', quantity: 1, productData: null });
