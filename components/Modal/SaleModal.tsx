@@ -222,8 +222,8 @@ const SalesModal = () => {
         toast.success('Sale recorded successfully');
         //router.push('/Sales')
         //router.refresh();
-        //window.location.href = '/Sales';
-        useSalesStore.getState().setNeedsRefresh(true);
+        window.location.href = '/Sales';
+
         reset();
         setSelectedProducts([]);
         setCurrentProduct({ productId: '', quantity: 1, productData: null });
