@@ -103,6 +103,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
@@ -113,6 +114,12 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
                   <tr key={product.$id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium">{product.Name}</div>
+                      <div className="text-sm text-gray-500">
+                        {product.Brand || 'No brand specified'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium">{product.Description}</div>
                       <div className="text-sm text-gray-500">
                         {product.Brand || 'No brand specified'}
                       </div>
