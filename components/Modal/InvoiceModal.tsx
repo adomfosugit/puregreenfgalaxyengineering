@@ -57,7 +57,8 @@ const InvoiceModal = () => {
       customerId: '',
       products: [],
       discount: 0,
-      taxRate: 0
+      taxRate: 0,
+      transport:0
     },
   });
 
@@ -184,9 +185,9 @@ const InvoiceModal = () => {
       0
     );
     
-
-    
-    return subtotal.toFixed(2);
+    const transport = watch('transport')
+    const total = subtotal + transport
+    return total.toFixed(2);
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -205,6 +206,7 @@ const InvoiceModal = () => {
           quantity: item.quantity,
           price: item.price,
         })),
+        Transport : parseFloat(data.transport)
       };
       {/* @ts-ignore*/}
       const upload = await uploadInvoices(invoiceData);
@@ -381,6 +383,7 @@ const InvoiceModal = () => {
                 />
               </div>
 
+
               <Button 
                 type="button" 
                 onClick={addProduct}
@@ -433,6 +436,17 @@ const InvoiceModal = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Transport</label>
+                <Input
+                  id='transport'
+                  type="number"
+                  {...register('transport', {
+                    valueAsNumber: true,
+                    
+                  })}
+                />
               </div>
 
             

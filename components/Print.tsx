@@ -27,7 +27,8 @@ interface Sale {
   $createdAt: string;
   Discount?: number;
   Tax?: number;
-  currentPrice:number[]
+  currentPrice:number[],
+  Transport:number
 }
 
 type DocumentType = "invoice" | "salesReceipt";
@@ -52,10 +53,11 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
   }, 0);
 
   const taxRate = (sale.Tax || 0) / 100;
+  const transport = sale.Transport
   const tax = subtotal * taxRate;
   const discountRate = (sale.Discount || 0) / 100;
   const discount = subtotal * discountRate;
-  const total = (subtotal + tax) - discount;
+  const total = (subtotal + tax) - discount + transport;
 
   const isInvoice = type === "invoice";
   const documentTitle = isInvoice ? "INVOICE" : "SALES RECEIPT";
@@ -119,7 +121,7 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium">{product.Description}</div>
+                      <div className="font-medium text-wrap">{product.Description}</div>
                       <div className="text-sm text-gray-500">
                         {product.Brand || 'No brand specified'}
                       </div>
@@ -131,8 +133,10 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       GHC {(product.Price * (sale.Itemqty[index] || sale.Quantity)).toFixed(2)}
                     </td>
+
                   </tr>
                 ))}
+                
               </tbody>
             </table>
           </div>
@@ -144,6 +148,10 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
             <div className="flex justify-between py-2 border-b">
               <span className="font-semibold">Subtotal:</span>
               <span>GHC {subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b">
+              <span className="font-semibold">Tranport:</span>
+              <span>GHC {sale.Transport}</span>
             </div>
             
             {!isInvoice && discount > 0 && (

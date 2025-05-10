@@ -58,7 +58,8 @@ const SalesModal = () => {
       customerId: '',
       products: [],
       discount: 0,
-      taxRate: 0
+      taxRate: 0,
+      transport:0
     },
   });
 
@@ -178,7 +179,7 @@ const SalesModal = () => {
         : item
     ));
   };
-
+  
   const calculateTotal = () => {
     const subtotal = selectedProducts.reduce(
       (sum, item) => sum + (item.price * item.quantity),
@@ -186,13 +187,14 @@ const SalesModal = () => {
     );
     
     const discountValue = watch('discount') || 0;
+    const transport = watch('transport')
     const taxRateValue = watch('taxRate') || 0;
   
     const taxAmount = subtotal * (taxRateValue / 100);
     const new_total = taxAmount + subtotal;
     const discountedAmount = (new_total) - (new_total * (discountValue / 100));
-    
-    return discountedAmount.toFixed(2);
+    const total = discountedAmount + transport
+    return total.toFixed(2);
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -209,6 +211,7 @@ const SalesModal = () => {
         customerId: data.customerId,
         Discount: parseFloat(data.discount),
         Tax: parseFloat(data.taxRate),
+        Transport: parseFloat(data.transport),
         products: selectedProducts.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -451,6 +454,17 @@ const SalesModal = () => {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Transport</label>
+                <Input
+                  id='transport'
+                  type="number"
+                  {...register('transport', {
+                    valueAsNumber: true,
+                    
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
                 <label className="text-sm font-medium">Tax (%)</label>
                 <Input
                   id='taxRate'
@@ -479,7 +493,7 @@ const SalesModal = () => {
               <div className="flex justify-between items-center p-3 bg-muted rounded-md">
                 <span className="text-sm font-medium">Total Price:</span>
                 <span className="font-bold">
-                  GHS {calculateTotal()}
+                  GHS {calculateTotal() }
                 </span>
               </div>
             </div>
