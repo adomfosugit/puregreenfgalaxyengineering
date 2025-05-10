@@ -18,6 +18,8 @@ interface ProductFormValues {
   userEmail: string
   category: string
   name:string;
+  Watt:number;
+  Voltage:number;
   imageSrc: string[];
 
 }
@@ -809,7 +811,7 @@ export async function uploadPurchase(data: salesOrder1) {
 
 
 export async function uploadProduct(data: ProductFormValues) {
-  const { category, price, description, quantity, brand, userEmail, name,width, length,imageSrc} = data;
+  const { category, price, description, quantity, brand, userEmail, name,width, length,imageSrc, Watt, Voltage} = data;
 
   try {
     // Upload land
@@ -828,7 +830,9 @@ export async function uploadProduct(data: ProductFormValues) {
         Email: userEmail,
         Dimension_Length:length,
         Dimension_Width:width,
-        ImageSrc:imageSrc
+        ImageSrc:imageSrc,
+        Wattage:Watt,
+        Voltage:Voltage,
       
       }
     );

@@ -80,12 +80,13 @@ const ProductModal = () => {
       description:'',
       quantity:1,
       brand:'',
-      width:1,
-      length:1,
+      width:0,
+      length:0,
       name:'',
       imageSrc: [],
-   
-  
+      Watt:0,
+      Voltage:0,
+       
     },
   });
 
@@ -227,7 +228,8 @@ const ProductModal = () => {
           errors={errors}
           required
         />
-        <div className='flex mx-auto justify-start space-x-3'> 
+        <div className='flex  flex-col mx-auto justify-start space-x-3'> 
+        <div className='flex flex-row'>
         <ProductDimension
           title="Width"
           subtitle="Enter the width of your product"
@@ -239,8 +241,24 @@ const ProductModal = () => {
           subtitle="Enter the length of your product"
           onChange={(value) => setCustomValue('length', value)}
           unit='m'
+        /></div>
+            <div  className='flex mx-auto justify-start space-x-3'>
+        <ProductDimension
+          title="Watt"
+          subtitle="Enter the Wattage of your product"
+          onChange={(value) => setCustomValue('Watt', value)}
+          unit='KW'
+        />
+        <ProductDimension
+          title="Voltage"
+          subtitle="Enter the Wattage of your product"
+          onChange={(value) => setCustomValue('Voltage', value)}
+          unit='V'
         />
         </div>
+      
+        </div>
+    
       
         
       </div>
