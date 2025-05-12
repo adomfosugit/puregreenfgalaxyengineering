@@ -185,8 +185,17 @@ const InvoiceModal = () => {
       0
     );
     
+    //const transport = watch('transport')
+    //const total = subtotal + transport
+    //return total.toFixed(2);
+    const discountValue = watch('discount') || 0;
     const transport = watch('transport')
-    const total = subtotal + transport
+    const taxRateValue = watch('taxRate') || 0;
+  
+    const taxAmount = subtotal * (taxRateValue / 100);
+    const new_total = taxAmount + subtotal;
+    const discountedAmount = (new_total) - (new_total * (discountValue / 100));
+    const total = discountedAmount + transport
     return total.toFixed(2);
   };
 
@@ -206,7 +215,9 @@ const InvoiceModal = () => {
           quantity: item.quantity,
           price: item.price,
         })),
-        Transport : parseFloat(data.transport)
+        Transport : parseFloat(data.transport),
+        Discount: parseFloat(data.discount),
+        Tax:parseFloat(data.taxRate)
       };
       {/* @ts-ignore*/}
       const upload = await uploadInvoices(invoiceData);
@@ -448,7 +459,32 @@ const InvoiceModal = () => {
                   })}
                 />
               </div>
-
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Tax (%)</label>
+                <Input
+                  id='taxRate'
+                  type="number"
+                  {...register('taxRate', {
+                    valueAsNumber: true,
+                    min: 0,
+                    max: 100
+                  })}
+                />
+              </div>
+             
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Discount (%)</label>
+                <Input
+                  id='discount'
+                  type="number"
+                  {...register('discount', {
+                    valueAsNumber: true,
+                    min: 0,
+                    max: 100
+                  })}
+                />
+              </div>
             
               
               <div className="flex justify-between items-center p-3 bg-muted rounded-md">

@@ -659,15 +659,19 @@ type InvoiceOrder1 = {
   product:Product1[];
   uploader:string
   Itemqty:number[],
-  Transport:number
+  Transport:number,
+  Tax:number,
+  Discount:number,
 
 }
 export async function uploadInvoices(data: InvoiceOrder1) {
-  const {Price, Quantity, customerId,product,Itemqty, Transport} = data;
+  const {Price, Quantity, customerId,product,Itemqty, Transport, Tax, Discount} = data;
 
   try {
     // Upload land
     const totalPrice = product.reduce((sum, item) => sum + (item.price * item.quantity),0);
+    const totalPriceTax =  totalPrice + totalPrice * (Tax / 100) 
+    const totalPriceDiscounted = totalPriceTax - (totalPriceTax * (Discount / 100)) + Transport;
     const { database } = await createAdminClient();
     const customerupload = await database.createDocument(
       NEXT_DATABASE_ID!,
@@ -675,7 +679,7 @@ export async function uploadInvoices(data: InvoiceOrder1) {
       ID.unique(),
      
       {
-        Price: totalPrice,
+        Price: totalPriceDiscounted,
         Itemqty: [...product.map(item => item.quantity)],
         currentPrice:[...product.map(item => item.price)],
         Quantity: product.reduce((sum, item) => sum + item.quantity, 0),
@@ -683,6 +687,8 @@ export async function uploadInvoices(data: InvoiceOrder1) {
         Transport:Transport,
         //@ts-ignore
         product: [ ...product.map(item => item.productId) ],
+        Tax:Tax,
+        Discount:Discount
       
       
     

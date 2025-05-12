@@ -154,14 +154,14 @@ export default function SalesDocument({ sale, type }: SalesReceiptClientProps) {
               <span>GHC {sale.Transport}</span>
             </div>
             
-            {!isInvoice && discount > 0 && (
+            {isInvoice && discount > 0 && (
               <div className="flex justify-between py-2 border-b">
                 <span className="font-semibold">Discount ({sale.Discount}%):</span>
                 <span className="text-red-600">- GHC {discount.toFixed(2)}</span>
               </div>
             )}
             
-            {!isInvoice && tax > 0 && (
+            {isInvoice && tax > 0 && (
               <div className="flex justify-between py-2 border-b">
                 <span className="font-semibold">Tax ({sale.Tax}%):</span>
                 <span>GHC {tax.toFixed(2)}</span>
