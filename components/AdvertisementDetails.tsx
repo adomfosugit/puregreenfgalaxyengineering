@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateProductByID } from "@/lib/Appwrite/api";
+import { updateAdvertisementByID, updateProductByID } from "@/lib/Appwrite/api";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,16 +12,14 @@ interface ProductDetailProps {
   details: any;
 }
 
-export default function ProductDetail({ details }: ProductDetailProps) {
+export default function AdvertisementDetail({ details }: ProductDetailProps) {
   const router = useRouter();
   
   const [formData, setFormData] = useState({
     Name: details?.Name ?? "",
-    Category: details?.Category ?? "",
-    Brand: details?.Brand ?? "",
-    Dimension_Length: details?.Dimension_Length ?? 0,
-    Dimension_Width: details?.Dimension_Width ?? 0,
-    Description: details?.Description ?? "",
+    category: details?.category ?? "",
+    Location: details?.Location ?? "",
+    Status: details?.Status ?? "",
     Quantity: details?.Quantity ?? 0,
     Price: details?.Price ?? 0,
   });
@@ -41,7 +39,7 @@ export default function ProductDetail({ details }: ProductDetailProps) {
     e.preventDefault();
     setIsSaving(true);
   
-    const success = await updateProductByID(details.$id, formData)
+    const success = await updateAdvertisementByID(details.$id, formData)
       .then(() => true)
       .catch((error) => {
         console.error("Failed to update product:", error);
@@ -49,7 +47,7 @@ export default function ProductDetail({ details }: ProductDetailProps) {
       });
   
     if (success) {
-      toast("Product successfully updated! 🎉");
+      toast("Data successfully updated! 🎉");
       // You can reset the form if you want, but usually for edit we keep it
       router.refresh();
     }
@@ -66,22 +64,11 @@ export default function ProductDetail({ details }: ProductDetailProps) {
         <p>Product Name</p>
         <Input name="Name" value={formData.Name} onChange={handleChange} placeholder="Name" />
         <p>Category</p>
-        <Input name="Category" value={formData.Category} onChange={handleChange} placeholder="Category" disabled/>
-        <p>Brand</p>
-        <Input name="Brand" value={formData.Brand} onChange={handleChange} placeholder="Brand" />
-        <div className="flex flex-row justify-between w-[500px]  ">
-            <div>
-            <p>Length</p>
-          <Input name="Dimension_Length" type="number" value={formData.Dimension_Length} onChange={handleChange} placeholder="Length" />
-        </div>
-        <div>
-        <p>Width</p>
-          <Input name="Dimension_Width" type="number" value={formData.Dimension_Width} onChange={handleChange} placeholder="Width" />
-        </div>
-
-        </div>
-        <p>Description</p>
-        <Input name="Description" value={formData.Description} onChange={handleChange} placeholder="Description" />
+        <Input name="category" value={formData.category} onChange={handleChange} placeholder="Category" disabled/>
+        <p>Location</p>
+        <Input name="Location" value={formData.Location} onChange={handleChange} placeholder="Location" />
+        <p>Status</p>
+        <Input name="Status" value={formData.Status} onChange={handleChange} placeholder="Status" disabled />
         <p>Quantity</p>
         <Input name="Quantity" type="number" value={formData.Quantity} onChange={handleChange} placeholder="Quantity" />
         <p>Price</p>

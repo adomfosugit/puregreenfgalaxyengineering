@@ -13,6 +13,7 @@ import { Customer } from "./Customers/page";
 import { Product } from "./Product/Column";
 import InvoiceModal from "@/components/Modal/InvoiceModal";
 import ExpenseModal from "@/components/Modal/ExpenseModal";
+import Advertisement from "@/components/Modal/Advertisement";
 
 
 const geistSans = Geist({
@@ -52,7 +53,7 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         <ProductModal />
         {/*@ts-ignore*/}
         <SalesModal /> 
-       
+        <Advertisement />
          {/*@ts-ignore*/}
        <InvoiceModal  />
         <CustomerModal />

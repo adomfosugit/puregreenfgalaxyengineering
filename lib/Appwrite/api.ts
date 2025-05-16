@@ -30,7 +30,7 @@ export type NewUser = {
 
 }
 // Authentication 
-const {NEXT_DATABASE_ID,NEXT_INVOICE_COLLECTION_ID,NEXT_EXPENSE_COLLECTION_ID, NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
+const {NEXT_DATABASE_ID,NEXT_INVOICE_COLLECTION_ID,NEXT_EXPENSE_COLLECTION_ID, NEXT_ADVERTISEMENT_COLLECTION_ID,NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
 
 export async function createSUserAccount(user:NewUser){ 
 
@@ -113,6 +113,19 @@ export async function getProducts(){
     console.log(error)
   }
 } 
+export async function getAdvertisement(){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERTISEMENT_COLLECTION_ID!,
+    [Query.limit(200)])
+      
+    return ProductData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function deleteProduct(id:string){
   try {
     const { database } = await createAdminClient()
@@ -147,6 +160,23 @@ export async function updateProductByID(id: string, data: any) {
     const updatedProduct = await database.updateDocument(
       NEXT_DATABASE_ID!,
       NEXT_PRODUCT_COLLECTION_ID!,
+      id,
+      data
+    );
+
+    return updatedProduct;
+  } catch (error) {
+    console.log(error);
+    throw error; // rethrow if you want to handle it in the page
+  }
+}
+export async function updateAdvertisementByID(id: string, data: any) {
+  try {
+    const { database } = await createAdminClient();
+    
+    const updatedProduct = await database.updateDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERTISEMENT_COLLECTION_ID!,
       id,
       data
     );
@@ -399,6 +429,19 @@ export async function getProductId(id:string){
     const landData = await database.getDocument(
       NEXT_DATABASE_ID!,
      NEXT_PRODUCT_COLLECTION_ID!,
+     id)
+      
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
+export async function getAdvertisementId(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_ADVERTISEMENT_COLLECTION_ID!,
      id)
       
    return landData
@@ -842,6 +885,47 @@ export async function uploadProduct(data: ProductFormValues) {
         ImageSrc:imageSrc,
         Wattage:Watt,
         Voltage:Voltage,
+      
+      }
+    );
+
+    // Return success and data
+    return { success: true, data: parseStringify(landupload) };
+  } catch (error) {
+    console.log(error);
+    //@ts-ignore
+    return { success: false, error: error?.message || "An error occurred while uploading the land." };
+  }
+}
+
+type AddFormValues ={
+    Name:string;
+    Location: string;
+    Status: 'Available' | 'Rented'
+    category: 'Billboard' | 'Medians'
+    Price: number;
+    Quantity:number;
+
+
+}
+
+export async function uploadAdvertisement(data: AddFormValues) {
+  const {  Name,Location,Status,category, Price, Quantity} = data;
+
+  try {
+    // Upload land
+    const { database } = await createAdminClient();
+    const landupload = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERTISEMENT_COLLECTION_ID!,
+      ID.unique(),
+      {
+       Name:Name,
+       Location:Location,
+       Status:Status,
+       category:category,
+       Price:Price,
+       Quantity:Quantity,
       
       }
     );
