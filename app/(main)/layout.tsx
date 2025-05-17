@@ -14,6 +14,7 @@ import { Product } from "./Product/Column";
 import InvoiceModal from "@/components/Modal/InvoiceModal";
 import ExpenseModal from "@/components/Modal/ExpenseModal";
 import Advertisement from "@/components/Modal/Advertisement";
+import Admanager from "@/components/Modal/Admanager";
 
 
 const geistSans = Geist({
@@ -54,6 +55,7 @@ export default async function RootLayout({children}: Readonly<{children: React.R
         {/*@ts-ignore*/}
         <SalesModal /> 
         <Advertisement />
+        <Admanager />
          {/*@ts-ignore*/}
        <InvoiceModal  />
         <CustomerModal />

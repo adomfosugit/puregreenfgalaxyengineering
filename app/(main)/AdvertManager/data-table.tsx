@@ -56,9 +56,9 @@ export function DataTable<TData, TValue>({
      <div className="flex items-center py-4 px-2">
         <Input
           placeholder="Filter by name..."
-          value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("CustomerName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("Name")?.setFilterValue(event.target.value)
+            table.getColumn("CustomerName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -66,10 +66,10 @@ export function DataTable<TData, TValue>({
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} >
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="text-center">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className='text-center'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

@@ -30,7 +30,7 @@ export type NewUser = {
 
 }
 // Authentication 
-const {NEXT_DATABASE_ID,NEXT_INVOICE_COLLECTION_ID,NEXT_EXPENSE_COLLECTION_ID, NEXT_ADVERTISEMENT_COLLECTION_ID,NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
+const {NEXT_DATABASE_ID,NEXT_INVOICE_COLLECTION_ID,NEXT_ADVERT_COLLECTION_ID,NEXT_EXPENSE_COLLECTION_ID, NEXT_ADVERTISEMENT_COLLECTION_ID,NEXT_SALES_COLLECTION_ID,NEXT_PURCHASE_COLLECTION_ID, NEXT_CUSTOMER_COLLECTION_ID, NEXT_USER_COLLECTION_ID,NEXT_PRODUCT_COLLECTION_ID,NEXT_BIDDER_COLLECTION_ID,NEXT_BUCKET_ID,NEXT_BUCKET_ID_DOCS} = process.env
 
 export async function createSUserAccount(user:NewUser){ 
 
@@ -126,6 +126,19 @@ export async function getAdvertisement(){
     console.log(error)
   }
 } 
+export async function getAdvert(){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERT_COLLECTION_ID!,
+    [Query.limit(200)])
+      
+    return ProductData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function deleteProduct(id:string){
   try {
     const { database } = await createAdminClient()
@@ -200,6 +213,19 @@ export async function getSearchProducts(searchterm:string){
     console.log(error)
   }
 } 
+export async function getSearchProductsAD(searchterm:string){
+  try {
+    const { database } = await createAdminClient()
+    const CustomerData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERTISEMENT_COLLECTION_ID!,
+      [Query.contains('Name', searchterm )  ])
+      
+    return CustomerData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
 export async function getinitialProducts(){
   try {
     const { database } = await createAdminClient()
@@ -207,6 +233,19 @@ export async function getinitialProducts(){
       NEXT_DATABASE_ID!,
       NEXT_PRODUCT_COLLECTION_ID!,
     [Query.limit(2)])
+      
+    return ProductData.documents
+  } catch (error) {
+    console.log(error)
+  }
+} 
+export async function getinitialProductsAD(){
+  try {
+    const { database } = await createAdminClient()
+    const ProductData = await database.listDocuments(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERTISEMENT_COLLECTION_ID!,
+    [Query.limit(10)])
       
     return ProductData.documents
   } catch (error) {
@@ -436,12 +475,38 @@ export async function getProductId(id:string){
    console.log(error)
  }
 } 
+export async function getProductIdAD(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_ADVERTISEMENT_COLLECTION_ID!,
+     id)
+      
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
 export async function getAdvertisementId(id:string){
   try {
     const { database } = await createAdminClient()
     const landData = await database.getDocument(
       NEXT_DATABASE_ID!,
      NEXT_ADVERTISEMENT_COLLECTION_ID!,
+     id)
+      
+   return landData
+  } catch (error) {
+   console.log(error)
+ }
+} 
+export async function getAdvertId(id:string){
+  try {
+    const { database } = await createAdminClient()
+    const landData = await database.getDocument(
+      NEXT_DATABASE_ID!,
+     NEXT_ADVERT_COLLECTION_ID!,
      id)
       
    return landData
@@ -1017,4 +1082,106 @@ export async function registerProduct(productimage: FormData) {
     console.error('Error uploading file:', error);
     return null;
   }
+}
+export async function createAdvertisementDeal(data: {
+  CustomerName: string;
+  PhoneNumber: string;
+  AmountPaid: number;
+  TenureStart: Date;
+  TenureEnd: Date;
+  DurationMonths: number;
+  products: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+    location: string;
+    totalPrice: number;
+  }>;
+}) {
+  const { CustomerName, PhoneNumber, AmountPaid, TenureStart, TenureEnd, DurationMonths, products } = data;
+
+  try {
+    const { database } = await createAdminClient();
+    
+    // Step 1: Validate all products and check quantities
+    const productValidations = await Promise.all(
+      products.map(async (item) => {
+        const product = await getProductIdAD(item.productId);
+        if (!product) {
+          return { valid: false, error: `Advertisement product ${item.productId} not found` };
+        }
+        if (product.Quantity < item.quantity) {
+          return { 
+            valid: false, 
+            error: `Insufficient quantity for ${product.Location} ${product.Name}` 
+          };
+        }
+        return { valid: true, product };
+      })
+    );
+
+    // Check for any validation errors
+    const validationError = productValidations.find(v => !v.valid);
+    if (validationError) {
+      return { success: false, error: validationError.error };
+    }
+
+    // Calculate total rental value
+    const totalRentalValue = products.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0
+    );
+
+    // Step 2: Create the advertisement document
+    const advertisementResult = await database.createDocument(
+      NEXT_DATABASE_ID!,
+      NEXT_ADVERT_COLLECTION_ID!, // You'll need to define this
+      ID.unique(),
+      {
+        CustomerName,
+        PhoneNumber,
+        AmountPaid,
+        TotalValue: totalRentalValue,
+        TenureStart: TenureStart.toISOString(),
+        TenureEnd: TenureEnd.toISOString(),
+        DurationMonths,
+        Status: AmountPaid >= totalRentalValue ? 'Paid' : 'Partial',
+        advertisement: products.map(item => ( item.productId ))} );
+
+    if (!advertisementResult) {
+      return { 
+        success: false, 
+        error: "Failed to create advertisement record" 
+      };
+    }
+
+    // Step 3: Update all product quantities (marking them as rented out)
+    const updatePromises = products.map(item => {
+      return database.updateDocument(
+        NEXT_DATABASE_ID!,
+        NEXT_ADVERTISEMENT_COLLECTION_ID!,
+        item.productId,
+        {
+          Quantity: productValidations
+            .find(v => v.valid && v.product?.$id === item.productId)
+            ?.product?.Quantity! - item.quantity,
+          Status: 'Rented', 
+
+        }
+      );
+    });
+
+    await Promise.all(updatePromises);
+
+    return { 
+      success: true, 
+      data: parseStringify(advertisementResult)
+    };
+  } catch (error) {
+    console.error('Advertisement creation error:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "An error occurred while processing the advertisement deal." 
+    };
+  } 
 }
